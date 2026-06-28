@@ -4,21 +4,21 @@
 @section('header', 'Bus Accounting & Commissions')
 
 @section('content')
-<div class="bg-white rounded-[10px] shadow-sm p-6 mb-8">
+<div class="bg-white rounded-none shadow-sm p-6 mb-8">
     <form method="GET" action="{{ route('accounting.index') }}" class="flex flex-wrap items-end gap-4">
         <div class="flex-1 min-w-[150px]">
             <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">From Date</label>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <input type="date" name="date_from" value="{{ request('date_from') }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
         </div>
         <div class="flex-1 min-w-[150px]">
             <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">To Date</label>
-            <input type="date" name="date_to" value="{{ request('date_to') }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <input type="date" name="date_to" value="{{ request('date_to') }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
         </div>
         <div class="flex items-center gap-2">
-            <button type="submit" class="bg-[#1c2238] text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-[#29324b] transition-colors">
+            <button type="submit" class="bg-[#1c2238] text-white font-semibold py-2.5 px-6 rounded-none hover:bg-[#29324b] transition-colors">
                 Filter Dates
             </button>
-            <a href="{{ route('accounting.index') }}" class="bg-gray-100 text-gray-600 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+            <a href="{{ route('accounting.index') }}" class="bg-gray-100 text-gray-600 font-semibold py-2.5 px-4 rounded-none hover:bg-gray-200 transition-colors">
                 Clear
             </a>
         </div>
@@ -37,28 +37,28 @@
         }
     @endphp
 
-    <div class="bg-white p-6 rounded-[10px] shadow-sm border-l-4 border-[#1c2238]">
+    <div class="bg-white p-6 rounded-none shadow-sm border-l-4 border-[#1c2238]">
         <p class="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Revenue</p>
         <p class="text-2xl font-black text-[#1c2238]">₹{{ number_format($totalRev, 2) }}</p>
     </div>
     
-    <div class="bg-white p-6 rounded-[10px] shadow-sm border-l-4 border-green-500">
+    <div class="bg-white p-6 rounded-none shadow-sm border-l-4 border-green-500">
         <p class="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Payable</p>
         <p class="text-2xl font-black text-green-600">₹{{ number_format($totalPay, 2) }}</p>
     </div>
 
-    <div class="bg-white p-6 rounded-[10px] shadow-sm border-l-4 border-[#f0b44b]">
+    <div class="bg-white p-6 rounded-none shadow-sm border-l-4 border-[#f0b44b]">
         <p class="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Commission</p>
         <p class="text-2xl font-black text-[#f0b44b]">₹{{ number_format($totalComm, 2) }}</p>
     </div>
 
-    <div class="bg-white p-6 rounded-[10px] shadow-sm border-l-4 border-blue-500">
+    <div class="bg-white p-6 rounded-none shadow-sm border-l-4 border-blue-500">
         <p class="text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Seats Sold</p>
         <p class="text-2xl font-black text-blue-600">{{ $totalSeats }} Seats</p>
     </div>
 </div>
 
-<div class="bg-white rounded-[10px] shadow-sm overflow-hidden">
+<div class="bg-white rounded-none shadow-sm overflow-hidden">
     <div class="px-6 py-5 border-b border-gray-100">
         <h2 class="text-[17px] font-bold text-[#1c2238]">Per Bus Accounting</h2>
     </div>

@@ -8,17 +8,17 @@
     
     <!-- Add User Form -->
     <div class="lg:col-span-1">
-        <div class="bg-white rounded-[10px] shadow-sm p-6">
+        <div class="bg-white rounded-none shadow-sm p-6">
             <h2 class="text-[17px] font-bold text-[#1c2238] mb-6">Add New User</h2>
             
             @if(session('success'))
-                <div class="mb-4 p-3 bg-[#e8f5ed] text-[#34a853] rounded-md text-sm font-semibold">
+                <div class="mb-4 p-3 bg-[#e8f5ed] text-[#34a853] rounded-none text-sm font-semibold">
                     {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-4 p-3 bg-[#fee2e2] text-[#ef4444] rounded-md text-sm font-semibold">
+                <div class="mb-4 p-3 bg-[#fee2e2] text-[#ef4444] rounded-none text-sm font-semibold">
                     <ul>
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -32,20 +32,20 @@
                 
                 <div class="mb-4">
                     <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Name</label>
-                    <input type="text" name="name" class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter user name" required>
+                    <input type="text" name="name" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter user name" required>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Email</label>
-                    <input type="email" name="email" class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter email address" required>
+                    <input type="email" name="email" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter email address" required>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Password</label>
-                    <input type="password" name="password" class="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter password" required>
+                    <input type="password" name="password" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter password" required>
                 </div>
 
-                <button type="submit" class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-2.5 rounded-md hover:bg-[#e0a43b] transition-colors">
+                <button type="submit" class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-2.5 rounded-none hover:bg-[#e0a43b] transition-colors">
                     Add User
                 </button>
             </form>
@@ -54,7 +54,7 @@
 
     <!-- Users List -->
     <div class="lg:col-span-2">
-        <div class="bg-white rounded-[10px] shadow-sm">
+        <div class="bg-white rounded-none shadow-sm">
             <div class="px-6 py-5 border-b border-gray-100">
                 <h2 class="text-[17px] font-bold text-[#1c2238]">Existing Users</h2>
             </div>

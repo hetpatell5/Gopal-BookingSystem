@@ -9,8 +9,41 @@ use App\Models\Bus;
 
 class PassengerController extends Controller
 {
+    public function create(Request $request)
+    {
+        $buses = Bus::all();
+        $selectedBusId = $request->input('bus_id');
+        $selectedDate = $request->input('date', now()->format('Y-m-d'));
+        
+        $bookedSeats = [];
+        $passengerData = [];
+
+        if ($selectedBusId) {
+            $bus = Bus::find($selectedBusId);
+            if ($bus) {
+                $passengers = $bus->passengers()->whereDate('journey_date', $selectedDate)->get();
+                foreach ($passengers as $passenger) {
+                    $seats = array_map('trim', explode(',', $passenger->seat_number));
+                    foreach ($seats as $seat) {
+                        if (!empty($seat)) {
+                            $bookedSeats[] = $seat;
+                            $passengerData[$seat] = $passenger;
+                        }
+                    }
+                }
+            }
+        }
+
+        return view('passengers.create', compact('buses', 'selectedBusId', 'selectedDate', 'bookedSeats', 'passengerData'));
+    }
+
     public function index(Request $request)
     {
+        // Default to today's date if no query parameters are provided
+        if (empty($request->query())) {
+            return redirect()->route('passengers.index', ['date' => now()->format('Y-m-d')]);
+        }
+
         $buses = Bus::all();
         $query = Passenger::with('bus');
 
@@ -93,7 +126,38 @@ class PassengerController extends Controller
             'commission_amount' => 'nullable|numeric',
         ]);
 
-        Passenger::create($request->all());
+        $passenger = Passenger::create($request->all());
+
+        // Prepare WhatsApp message if mobile number is provided
+        if (!empty($passenger->passenger_mobile)) {
+            $bus = Bus::find($passenger->bus_id);
+            $busName = $bus ? $bus->name : 'N/A';
+            $date = \Carbon\Carbon::parse($passenger->journey_date)->format('d M, Y');
+            
+            $adminWhatsApp = auth()->check() && !empty(auth()->user()->whatsapp_number) ? "\n*Support:* " . auth()->user()->whatsapp_number : "";
+
+            $message = "🎫 *TICKET CONFIRMATION* 🎫\n\n"
+                     . "*Bus:* {$busName}\n"
+                     . "*Passenger:* {$passenger->passenger_name}\n"
+                     . "*Seat No:* {$passenger->seat_number}\n"
+                     . "*Date:* {$date}\n"
+                     . "*Amount:* Rs {$passenger->total_amount}\n"
+                     . $adminWhatsApp . "\n\n"
+                     . "Thank you for booking with Setu! Have a safe journey.";
+            
+            // Clean mobile number (assuming India +91 default)
+            $mobile = preg_replace('/[^0-9]/', '', $passenger->passenger_mobile);
+            if (strlen($mobile) == 10) {
+                $mobile = '91' . $mobile;
+            }
+            
+            $whatsappLink = "https://api.whatsapp.com/send?phone={$mobile}&text=" . urlencode($message);
+            
+            return redirect()->back()->with([
+                'success' => 'Seat booked successfully!',
+                'whatsapp_link' => $whatsappLink
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Seat booked successfully.');
     }
@@ -147,5 +211,29 @@ class PassengerController extends Controller
         Passenger::whereIn('id', $request->passenger_ids)->delete();
 
         return back()->with('success', count($request->passenger_ids) . ' passenger(s) removed successfully.');
+    }
+
+    public function printRegister(Request $request)
+    {
+        $selectedDate = $request->input('date', now()->format('Y-m-d'));
+        
+        $query = Passenger::with('bus')
+            ->whereDate('journey_date', $selectedDate)
+            ->orderBy('bus_id')
+            ->orderBy('seat_number');
+
+        $bus = null;
+        if ($request->filled('bus_id')) {
+            $query->where('bus_id', $request->bus_id);
+            $bus = Bus::find($request->bus_id);
+        }
+
+        $passengers = $query->get();
+
+        $totalRevenue = $passengers->sum('total_amount');
+        $totalPayable = $passengers->sum('payable_amount');
+        $totalCommission = $passengers->sum('commission_amount');
+
+        return view('passengers.register', compact('passengers', 'selectedDate', 'totalRevenue', 'totalPayable', 'totalCommission', 'bus'));
     }
 }

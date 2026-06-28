@@ -10,21 +10,21 @@
         <!-- Search Field -->
         <div class="w-full md:w-1/3">
             <label class="block text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-2">Search Passenger</label>
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, Mobile, or Seat..." class="w-full px-4 py-2.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, Mobile, or Seat..." class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
         </div>
 
         <!-- Date Filter -->
         <div class="w-full md:w-1/4">
             <label class="block text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-2">Journey Date</label>
-            <input type="date" name="date" value="{{ request('date', \Carbon\Carbon::today()->format('Y-m-d')) }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <input type="date" name="date" value="{{ request('date', \Carbon\Carbon::today()->format('Y-m-d')) }}" class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
         </div>
 
         <!-- Buttons -->
         <div class="flex gap-2">
-            <button type="submit" class="px-6 py-2.5 bg-[#1c2238] text-white font-semibold rounded-md hover:bg-[#2a3454] transition-colors">
+            <button type="submit" class="px-6 py-2.5 bg-[#1c2238] text-white font-semibold rounded-none hover:bg-[#2a3454] transition-colors">
                 Search
             </button>
-            <a href="{{ route('tickets.index') }}" class="px-6 py-2.5 bg-gray-100 text-gray-600 font-semibold rounded-md hover:bg-gray-200 transition-colors">
+            <a href="{{ route('tickets.index') }}" class="px-6 py-2.5 bg-gray-100 text-gray-600 font-semibold rounded-none hover:bg-gray-200 transition-colors">
                 Clear
             </a>
         </div>

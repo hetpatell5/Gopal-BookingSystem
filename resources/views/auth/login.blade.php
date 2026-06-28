@@ -15,7 +15,7 @@
         </div>
 
         @if($errors->any())
-            <div class="mb-4 p-3 bg-red-50 text-red-600 rounded-md text-sm font-semibold border border-red-200">
+            <div class="mb-4 p-3 bg-red-50 text-red-600 rounded-none text-sm font-semibold border border-red-200">
                 {{ $errors->first() }}
             </div>
         @endif
@@ -24,15 +24,15 @@
             @csrf
             <div class="mb-5">
                 <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Email Address</label>
-                <input type="email" name="email" value="{{ old('email') }}" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+                <input type="email" name="email" value="{{ old('email') }}" required class="w-full px-4 py-3 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
             </div>
 
             <div class="mb-6">
                 <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Password</label>
-                <input type="password" name="password" required class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+                <input type="password" name="password" required class="w-full px-4 py-3 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
             </div>
 
-            <button type="submit" class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-3.5 rounded-lg hover:bg-[#e0a43b] transition-colors shadow-sm">
+            <button type="submit" class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-3.5 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm">
                 Sign In
             </button>
         </form>

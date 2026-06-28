@@ -29,7 +29,7 @@
 <body>
 
     <div class="text-center mt-8 no-print">
-        <button onclick="window.print()" class="px-8 py-3 bg-[#1c2238] text-white font-bold rounded-lg shadow-md hover:bg-[#2a3454] transition-colors">
+        <button onclick="window.print()" class="px-8 py-3 bg-[#1c2238] text-white font-bold rounded-none shadow-md hover:bg-[#2a3454] transition-colors">
             <i class="fa-solid fa-print mr-2"></i> Print This Ticket
         </button>
     </div>
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Bus & Seat Info -->
-        <div class="bg-gray-50 p-6 rounded-lg mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gray-50 p-6 rounded-none mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
                 <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bus Service</p>
                 <p class="text-[15px] font-bold text-[#1c2238]">{{ $ticket->bus->name }}</p>

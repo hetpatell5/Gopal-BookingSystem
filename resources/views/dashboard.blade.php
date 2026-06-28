@@ -8,25 +8,25 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     
     <!-- Card 1 -->
-    <div class="bg-white rounded-[10px] p-6 shadow-sm border-l-4 border-l-[#f0b44b]">
+    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-[#f0b44b]">
         <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Bookings Today</h3>
         <p class="text-3xl font-bold text-[#1c2238]">{{ $bookingsToday }}</p>
     </div>
 
     <!-- Card 2 -->
-    <div class="bg-white rounded-[10px] p-6 shadow-sm border-l-4 border-l-green-500">
+    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-green-500">
         <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Revenue Today</h3>
         <p class="text-3xl font-bold text-green-600">₹{{ number_format($revenueToday, 2) }}</p>
     </div>
 
     <!-- Card 3 -->
-    <div class="bg-white rounded-[10px] p-6 shadow-sm border-l-4 border-l-blue-500">
+    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-blue-500">
         <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Commission Earned</h3>
         <p class="text-3xl font-bold text-blue-600">₹{{ number_format($commissionEarned, 2) }}</p>
     </div>
 
     <!-- Card 4 -->
-    <div class="bg-white rounded-[10px] p-6 shadow-sm border-l-4 border-l-[#1c2238]">
+    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-[#1c2238]">
         <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Active Buses</h3>
         <p class="text-3xl font-bold text-[#1c2238]">{{ $activeBuses }}</p>
     </div>
@@ -37,7 +37,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     
     <!-- Revenue Trend Chart -->
-    <div class="lg:col-span-2 bg-white rounded-[10px] p-6 shadow-sm">
+    <div class="lg:col-span-2 bg-white rounded-none p-6 shadow-sm">
         <h2 class="text-[15px] font-bold text-[#1c2238] mb-4">Revenue Trend (Last 7 Days)</h2>
         <div class="relative h-[300px] w-full">
             <canvas id="revenueChart"></canvas>
@@ -45,19 +45,19 @@
     </div>
 
     <!-- Today's Bus Performance -->
-    <div class="bg-white rounded-[10px] p-6 shadow-sm flex flex-col">
+    <div class="bg-white rounded-none p-6 shadow-sm flex flex-col">
         <h2 class="text-[15px] font-bold text-[#1c2238] mb-4">Today's Performance by Bus</h2>
         
         <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             <div class="space-y-4">
                 @forelse($busPerformance as $bus)
-                <div class="border border-gray-100 rounded-lg p-4 hover:border-[#f0b44b] transition-colors">
+                <div class="border border-gray-100 rounded-none p-4 hover:border-[#f0b44b] transition-colors">
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <h4 class="text-[13px] font-bold text-[#1c2238]">{{ $bus->name }}</h4>
                             <p class="text-[11px] text-gray-500 font-medium">{{ $bus->plate_number }}</p>
                         </div>
-                        <span class="inline-flex items-center justify-center px-2 py-1 rounded bg-[#fff8eb] text-[#f0b44b] text-[11px] font-bold">
+                        <span class="inline-flex items-center justify-center px-2 py-1 rounded-none bg-[#fff8eb] text-[#f0b44b] text-[11px] font-bold">
                             {{ $bus->today_bookings }} Seats
                         </span>
                     </div>
@@ -75,7 +75,7 @@
 </div>
 
 <!-- Recent Bookings Table -->
-<div class="bg-white rounded-[10px] shadow-sm">
+<div class="bg-white rounded-none shadow-sm">
     <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
         <h2 class="text-[17px] font-bold text-[#1c2238]">Recent Bookings</h2>
         <span class="text-[13px] text-gray-500 font-medium">Last 6</span>

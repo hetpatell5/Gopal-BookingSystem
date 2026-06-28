@@ -9,9 +9,38 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    @if(file_exists(public_path('favicon.ico')))
+        <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
+    @endif
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
+        }
+        
+        /* Sidebar Collapsed Styles */
+        aside.collapsed-sidebar {
+            width: 80px !important;
+        }
+        aside.collapsed-sidebar .sidebar-text {
+            display: none !important;
+        }
+        aside.collapsed-sidebar a, aside.collapsed-sidebar .user-footer {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        aside.collapsed-sidebar a svg {
+            margin-right: 0 !important;
+        }
+        aside.collapsed-sidebar .logo-container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+        aside.collapsed-sidebar .user-avatar {
+            margin-right: 0 !important;
         }
     </style>
 </head>
@@ -23,48 +52,66 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Top Navbar -->
-        <header class="bg-white h-[72px] flex items-center justify-between px-8 shrink-0 shadow-sm z-10">
-            <!-- Page Title -->
-            <h1 class="text-[20px] font-bold text-[#1c2238] tracking-tight min-w-[200px]">@yield('header', 'Dashboard')</h1>
-            
-            <!-- Global Search Bar -->
-            <div class="flex-1 max-w-xl px-8 hidden md:block">
-                <form action="{{ route('passengers.index') }}" method="GET" class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-search text-gray-400 group-focus-within:text-[#f0b44b] transition-colors"></i>
-                    </div>
-                    <input type="text" name="search" placeholder="Global search passengers, mobile, or seat..." class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 focus:bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f0b44b] focus:border-[#f0b44b] sm:text-sm transition-colors shadow-sm">
-                </form>
+        <!-- Top Navbar -->
+        <header class="bg-white flex items-center justify-between px-8 shrink-0 shadow-sm z-10 border-b border-gray-100" style="height: 60px;">
+            <!-- Left Side: Page Title -->
+            <div class="flex items-center">
+                <button id="sidebarToggleBtn" class="mr-5 text-gray-400 hover:text-[#f0b44b] transition-colors focus:outline-none" style="margin-right: 20px;">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h1 class="text-[20px] font-black text-[#1c2238] tracking-tight">@yield('header', 'Dashboard')</h1>
             </div>
-
+            
             <!-- Right Actions -->
             <div class="flex items-center gap-6">
+                
+                <!-- Pill Search Bar -->
+                <form action="{{ route('passengers.index') }}" method="GET" class="relative hidden sm:block w-56 transition-all duration-300 focus-within:w-72">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-gray-400 text-[13px]"></i>
+                    </div>
+                    <input type="text" name="search" placeholder="Search passengers, buses..." class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-full bg-gray-50 text-[13px] text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f0b44b] focus:border-[#f0b44b] focus:bg-white shadow-sm transition-all">
+                </form>
+
                 <!-- Date -->
-                <span class="text-[13px] font-semibold text-gray-500 hidden lg:block">
-                    <i class="fa-regular fa-calendar mr-2"></i>{{ now()->format('l, d F Y') }}
-                </span>
+                <div class="hidden lg:flex items-center text-[13px] font-bold text-gray-500 bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+                    <i class="fa-regular fa-calendar text-[#f0b44b] mr-2 text-[14px]"></i>
+                    {{ now()->format('d M, Y') }}
+                </div>
 
                 <!-- Notifications -->
                 <button class="text-gray-400 hover:text-[#f0b44b] transition-colors relative">
                     <i class="fa-regular fa-bell text-[18px]"></i>
-                    <span class="absolute top-0 right-0 -mt-1 -mr-1 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                    <span class="absolute top-0 right-0 -mt-0.5 -mr-0.5 flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f0b44b] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#f0b44b] border border-white"></span>
                     </span>
                 </button>
 
-                <!-- User Dropdown (Logout) -->
+                <!-- User Profile Dropdown -->
                 @auth
-                <div class="relative flex items-center gap-3 pl-6 border-l border-gray-200">
-                    <div class="w-8 h-8 rounded-full bg-[#f0b44b] text-[#1c2238] flex items-center justify-center font-bold text-sm shadow-sm">
-                        {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                <div class="relative flex items-center gap-3 cursor-pointer group pl-2 border-l border-gray-200">
+                    @if(auth()->user()->avatar)
+                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="User Avatar" class="w-9 h-9 rounded-full shadow-sm ring-2 ring-transparent group-hover:ring-[#f0b44b] transition-all object-cover" style="width: 36px; height: 36px; min-width: 36px;">
+                    @else
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=f0b44b&color=1c2238&bold=true&rounded=true" alt="User Avatar" class="w-9 h-9 rounded-full shadow-sm ring-2 ring-transparent group-hover:ring-[#f0b44b] transition-all">
+                    @endif
+                    
+                    <div class="hidden md:flex flex-col">
+                        <span class="text-[13px] font-bold text-[#1c2238] leading-tight">{{ auth()->user()->name ?? 'Administrator' }}</span>
+                        <span class="text-[11px] font-semibold text-gray-400 leading-tight">System Admin</span>
                     </div>
-                    <div class="flex flex-col">
-                        <span class="text-[13px] font-bold text-[#1c2238]">{{ auth()->user()->name ?? 'Admin User' }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 hidden md:block transition-transform group-hover:rotate-180"></i>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 top-full mt-3 w-48 bg-white rounded-none shadow-xl py-1 hidden group-hover:block border border-gray-100 z-50">
+                        <a href="{{ route('settings.index') }}" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#f0b44b] transition-colors border-b border-gray-100">
+                            <i class="fa-solid fa-gear mr-2"></i> Settings
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="text-[11px] font-semibold text-red-500 hover:text-red-700 text-left transition-colors">
-                                Logout
+                            <button type="submit" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout
                             </button>
                         </form>
                     </div>
@@ -79,5 +126,22 @@
         </main>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('main-sidebar');
+            const toggleBtn = document.getElementById('sidebarToggleBtn');
+
+            // Check local storage for preference
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed-sidebar');
+            }
+
+            // Toggle sidebar
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed-sidebar');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed-sidebar'));
+            });
+        });
+    </script>
 </body>
 </html>
