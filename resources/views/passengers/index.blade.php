@@ -22,7 +22,9 @@
 
         <div class="flex-1 min-w-[200px]">
             <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Search Passenger</label>
-            <input type="text" name="search" value="{{ request('search') }}" onchange="this.form.submit()" placeholder="Name, Mobile, Seat, or Pickup..." class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
+                   placeholder="Name, Mobile, Seat, or Pickup..."
+                   class="w-full px-4 py-2.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
         </div>
 
         <div class="flex-1 min-w-[200px]">
@@ -245,5 +247,20 @@
             }
         });
     });
+</script>
+
+<script>
+    // Debounced live search — submits 400ms after the user stops typing
+    (function() {
+        const searchInput = document.getElementById('searchInput');
+        if (!searchInput) return;
+        let debounceTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                this.closest('form').submit();
+            }, 400);
+        });
+    })();
 </script>
 @endsection

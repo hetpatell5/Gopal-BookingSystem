@@ -151,10 +151,14 @@
 
 <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
     
-    <!-- Seat Layout (Bus Map) -->
+    <!-- Seat Layout (Bus Map) - Dynamic Lower + Upper Deck -->
     <div style="flex: 1 1 45%; min-width: 300px;" class="bg-white rounded-none shadow-sm p-6 relative">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h2 class="text-[17px] font-bold text-[#1c2238]">Seat Layout (Sleeper)</h2>
+            <h2 class="text-[17px] font-bold text-[#1c2238]">
+                Seat Layout
+                <span class="ml-2 px-2 py-0.5 text-[11px] font-bold bg-gray-100 text-gray-500 rounded-sm">{{ $seatLayout }}</span>
+                <span class="ml-1 px-2 py-0.5 text-[11px] font-bold bg-blue-50 text-blue-600 rounded-sm">{{ $totalSeats }} seats</span>
+            </h2>
             <form method="GET" action="{{ route('buses.show', $bus->id) }}" class="flex items-center gap-2">
                 <label class="text-[12px] font-bold text-gray-500 uppercase tracking-widest">Date:</label>
                 <input type="date" name="date" value="{{ $selectedDate }}" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] font-bold text-[#1c2238] bg-gray-50">
@@ -167,9 +171,98 @@
             <div class="flex items-center"><span class="w-4 h-4 bg-[#e5e7eb] border-2 border-[#e5e7eb] rounded-none mr-2"></span> Sold</div>
         </div>
 
+        @php
+            $lowerCount = (int) ceil($totalSeats / 2);
+            $upperCount = (int) floor($totalSeats / 2);
+
+            // Render a single seat button (label = e.g. 'L5' or 'U12')
+            $renderBerth = function(string $label, array $bookedSeats, array $passengerData) {
+                $isBooked      = in_array($label, $bookedSeats);
+                $passengerId   = $isBooked ? $passengerData[$label]->id            : null;
+                $passengerName = $isBooked ? $passengerData[$label]->passenger_name : '';
+                $pseudoSeats   = $isBooked ? $passengerData[$label]->seat_number    : '';
+                $cls           = $isBooked ? 'berth-booked' : 'berth-available';
+                $html  = '<div class="berth-wrapper">';
+                $html .= '<button type="button"'
+                    . ' data-seat="'   . e($label)          . '"'
+                    . ' data-booked="' . ($isBooked ? 'true' : 'false') . '"'
+                    . ' data-pid="'    . e($passengerId)    . '"'
+                    . ' data-pname="'  . e($passengerName)  . '"'
+                    . ' data-pseats="' . e($pseudoSeats)    . '"'
+                    . ' class="berth ' . $cls . '">'
+                    . e($label)
+                    . '</button>';
+                if ($isBooked) {
+                    $html .= '<span class="berth-booked-label">Sold</span>';
+                }
+                $html .= '</div>';
+                return $html;
+            };
+
+            // Render the interior row-layout HTML for one deck
+            $renderDeckRows = function(string $prefix, int $count, string $layout, array $bookedSeats, array $passengerData) use ($renderBerth) {
+                $html = '';
+                if ($layout === '1x2') {
+                    $leftCount = (int) floor($count / 3);
+                    $rightRows = (int) ceil(($count - $leftCount) / 2);
+
+                    // Left single col
+                    $html .= '<div class="col-layout">';
+                    for ($i = 1; $i <= $leftCount; $i++) {
+                        $html .= $renderBerth($prefix . $i, $bookedSeats, $passengerData);
+                    }
+                    $html .= '</div>';
+
+                    // Aisle
+                    $html .= '<div style="width:40px;"></div>';
+
+                    // Right double col
+                    $html .= '<div class="double-col"><div class="col-layout">';
+                    for ($row = 0; $row < $rightRows; $row++) {
+                        $inner = $leftCount + ($row * 2) + 1;
+                        $outer = $inner + 1;
+                        $html .= '<div style="display:flex;gap:10px;">';
+                        if ($inner <= $count) $html .= $renderBerth($prefix . $inner, $bookedSeats, $passengerData);
+                        if ($outer <= $count) $html .= $renderBerth($prefix . $outer, $bookedSeats, $passengerData);
+                        $html .= '</div>';
+                    }
+                    $html .= '</div></div>';
+                } else {
+                    // 2x2
+                    $rows = (int) ceil($count / 4);
+
+                    // Left pair
+                    $html .= '<div class="col-layout">';
+                    for ($row = 0; $row < $rows; $row++) {
+                        $s1 = $row * 4 + 1; $s2 = $row * 4 + 2;
+                        $html .= '<div class="double-col">';
+                        if ($s1 <= $count) $html .= $renderBerth($prefix . $s1, $bookedSeats, $passengerData);
+                        if ($s2 <= $count) $html .= $renderBerth($prefix . $s2, $bookedSeats, $passengerData);
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+
+                    // Aisle
+                    $html .= '<div style="width:40px;"></div>';
+
+                    // Right pair
+                    $html .= '<div class="col-layout">';
+                    for ($row = 0; $row < $rows; $row++) {
+                        $s3 = $row * 4 + 3; $s4 = $row * 4 + 4;
+                        $html .= '<div class="double-col">';
+                        if ($s3 <= $count) $html .= $renderBerth($prefix . $s3, $bookedSeats, $passengerData);
+                        if ($s4 <= $count) $html .= $renderBerth($prefix . $s4, $bookedSeats, $passengerData);
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                }
+                return $html;
+            };
+        @endphp
+
         <div class="deck-container">
-            
-            <!-- Lower Deck -->
+
+            {{-- ===== LOWER DECK ===== --}}
             <div class="deck">
                 <div class="deck-title">
                     Lower deck
@@ -179,134 +272,18 @@
                         <path stroke-width="2" d="M12 2v6m0 8v6m-8-8h6m8 0h-6"/>
                     </svg>
                 </div>
-                
                 <div class="row-layout">
-                    <!-- Left Single Col -->
-                    <div class="col-layout">
-                        @for($i=1; $i<=5; $i++)
-                            @php
-                                $seatLabel = "L" . $i;
-                                $isBooked = in_array($seatLabel, $bookedSeats);
-                                $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                            @endphp
-                            <div class="berth-wrapper">
-                                <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                    {{ $seatLabel }}
-                                </button>
-                                @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                            </div>
-                        @endfor
-                    </div>
-                    
-                    <!-- Aisle -->
-                    <div style="width: 40px;"></div>
-                    
-                    <!-- Right Double Col -->
-                    <div class="double-col">
-                        <!-- Inner Col -->
-                        <div class="col-layout">
-                            @for($i=1; $i<=5; $i++)
-                                @php
-                                    $seatLabel = "L" . (5 + ($i * 2) - 1); // L6, L8, L10...
-                                    $isBooked = in_array($seatLabel, $bookedSeats);
-                                    $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                    $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                                @endphp
-                                <div class="berth-wrapper">
-                                    <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                        {{ $seatLabel }}
-                                    </button>
-                                    @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                                </div>
-                            @endfor
-                        </div>
-                        <!-- Outer Col -->
-                        <div class="col-layout">
-                            @for($i=1; $i<=5; $i++)
-                                @php
-                                    $seatLabel = "L" . (5 + ($i * 2)); // L7, L9, L11...
-                                    $isBooked = in_array($seatLabel, $bookedSeats);
-                                    $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                    $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                                @endphp
-                                <div class="berth-wrapper">
-                                    <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                        {{ $seatLabel }}
-                                    </button>
-                                    @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
+                    {!! $renderDeckRows('L', $lowerCount, $seatLayout, $bookedSeats, $passengerData) !!}
                 </div>
             </div>
 
-            <!-- Upper Deck -->
+            {{-- ===== UPPER DECK ===== --}}
             <div class="deck">
                 <div class="deck-title">
                     Upper deck
                 </div>
-                
                 <div class="row-layout">
-                    <!-- Left Single Col -->
-                    <div class="col-layout">
-                        @for($i=1; $i<=5; $i++)
-                            @php
-                                $seatLabel = "U" . $i;
-                                $isBooked = in_array($seatLabel, $bookedSeats);
-                                $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                            @endphp
-                            <div class="berth-wrapper">
-                                <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                    {{ $seatLabel }}
-                                </button>
-                                @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                            </div>
-                        @endfor
-                    </div>
-                    
-                    <!-- Aisle -->
-                    <div style="width: 40px;"></div>
-                    
-                    <!-- Right Double Col -->
-                    <div class="double-col">
-                        <!-- Inner Col -->
-                        <div class="col-layout">
-                            @for($i=1; $i<=5; $i++)
-                                @php
-                                    $seatLabel = "U" . (5 + ($i * 2) - 1);
-                                    $isBooked = in_array($seatLabel, $bookedSeats);
-                                    $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                    $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                                @endphp
-                                <div class="berth-wrapper">
-                                    <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                        {{ $seatLabel }}
-                                    </button>
-                                    @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                                </div>
-                            @endfor
-                        </div>
-                        <!-- Outer Col -->
-                        <div class="col-layout">
-                            @for($i=1; $i<=5; $i++)
-                                @php
-                                    $seatLabel = "U" . (5 + ($i * 2));
-                                    $isBooked = in_array($seatLabel, $bookedSeats);
-                                    $passengerId = $isBooked ? $passengerData[$seatLabel]->id : null;
-                                    $passengerName = $isBooked ? $passengerData[$seatLabel]->passenger_name : '';
-                                @endphp
-                                <div class="berth-wrapper">
-                                    <button type="button" data-seat="{{ $seatLabel }}" data-booked="{{ $isBooked ? 'true' : 'false' }}" data-pid="{{ $passengerId }}" data-pname="{{ $passengerName }}" data-pseats="{{ $isBooked ? $passengerData[$seatLabel]->seat_number : '' }}" class="berth {{ $isBooked ? 'berth-booked' : 'berth-available' }}">
-                                        {{ $seatLabel }}
-                                    </button>
-                                    @if($isBooked) <span class="berth-booked-label">Sold</span> @endif
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
+                    {!! $renderDeckRows('U', $upperCount, $seatLayout, $bookedSeats, $passengerData) !!}
                 </div>
             </div>
 
@@ -318,15 +295,18 @@
         <h2 class="text-[17px] font-bold text-[#1c2238] mb-6">Booking Details</h2>
         
         @if(session('success'))
-            <div class="mb-6 p-4 bg-[#e8f5ed] border border-[#34a853]/20 shadow-sm rounded-none text-sm font-semibold flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center text-[#34a853]">
-                    <i class="fa-solid fa-circle-check mr-2 text-lg"></i>
+            <div class="mb-6 rounded-none overflow-hidden border border-[#34a853]/30 shadow-sm">
+                <div class="bg-[#e8f5ed] px-4 py-3 flex items-center gap-2 text-[#34a853] text-sm font-semibold">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
                     {{ session('success') }}
                 </div>
-                
                 @if(session('whatsapp_link'))
-                    <a href="{{ session('whatsapp_link') }}" target="_blank" class="px-4 py-2 bg-[#25D366] text-white text-[12px] font-bold uppercase tracking-wider hover:bg-[#128C7E] transition-colors rounded-none flex items-center shadow-sm">
-                        <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Send Ticket on WhatsApp
+                    <a href="{{ session('whatsapp_link') }}" target="_blank"
+                       style="display:block; background-color:#25D366; color:#ffffff; text-decoration:none; padding:10px 16px; font-size:13px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">
+                        <span style="display:flex; align-items:center; gap:8px;">
+                            <i class="fa-brands fa-whatsapp" style="font-size:18px;"></i>
+                            Send Ticket on WhatsApp
+                        </span>
                     </a>
                 @endif
             </div>
@@ -371,16 +351,26 @@
                     <input type="text" name="village_name" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter village">
                 </div>
 
-                <!-- Traveler Name -->
+                <!-- Traveler Name (auto-filled from bus name, editable) -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Traveler Name</label>
-                    <input type="text" name="traveler_name" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter traveler name">
+                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">
+                        Traveler Name
+                    </label>
+                    <input type="text" name="traveler_name" id="traveler_name"
+                           value="{{ $bus->name }}"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           placeholder="Enter traveler name">
                 </div>
 
-                <!-- Traveler Number Plate -->
+                <!-- Traveler Plate # (auto-filled from bus plate number, editable) -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Traveler Plate #</label>
-                    <input type="text" name="traveler_number_plate" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter plate number">
+                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">
+                        Traveler Plate #
+                    </label>
+                    <input type="text" name="traveler_number_plate" id="traveler_number_plate"
+                           value="{{ $bus->plate_number }}"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           placeholder="Enter plate number">
                 </div>
 
                 <!-- AC / Non AC -->
@@ -435,17 +425,19 @@
                     <input type="number" name="total_seats" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="1">
                 </div>
 
-                <!-- Commission (%) -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission (%)</label>
-                    <input type="number" step="0.01" name="commission_percentage" id="commission_percentage" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="0">
-                </div>
+                @if($bus->bus_type === 'Commission')
+                    <!-- Commission (%) -->
+                    <div class="mb-2">
+                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission (%)</label>
+                        <input type="number" step="0.01" name="commission_percentage" id="commission_percentage" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="0">
+                    </div>
 
-                <!-- Commission Amount -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission Amount</label>
-                    <input type="number" step="0.01" name="commission_amount" id="commission_amount" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-gray-50 text-[14px]" value="0" readonly>
-                </div>
+                    <!-- Commission Amount -->
+                    <div class="mb-2">
+                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission Amount</label>
+                        <input type="number" step="0.01" name="commission_amount" id="commission_amount" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-gray-50 text-[14px]" value="0" readonly>
+                    </div>
+                @endif
             </div>
 
             <!-- Note -->

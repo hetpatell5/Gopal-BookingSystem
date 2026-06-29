@@ -17,13 +17,21 @@ class BusController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'         => 'required|string|max:255',
             'plate_number' => 'required|string|max:255|unique:buses',
+            'bus_type'     => 'required|in:Personal,Commission',
+            'total_seats'  => 'required|integer|min:1|max:60',
+            'ac_non_ac'    => 'required|in:AC,Non AC',
+            'seat_layout'  => 'required|in:1x2,2x2',
         ]);
 
         $bus = Bus::create([
-            'name' => $request->name,
+            'name'         => $request->name,
             'plate_number' => $request->plate_number,
+            'bus_type'     => $request->bus_type,
+            'total_seats'  => $request->total_seats,
+            'ac_non_ac'    => $request->ac_non_ac,
+            'seat_layout'  => $request->seat_layout,
         ]);
 
         return redirect()->route('buses.show', $bus->id)->with('success', 'Bus added successfully.');
@@ -52,10 +60,10 @@ class BusController extends Controller
         }
 
         // Accounting Data for this bus map
-        $totalRevenue = $allPassengersForDate->sum('total_amount');
+        $totalRevenue    = $allPassengersForDate->sum('total_amount');
         $totalCommission = $allPassengersForDate->sum('commission_amount');
-        $totalPayable = $allPassengersForDate->sum('payable_amount');
-        $totalSeatsSold = $allPassengersForDate->sum('total_seats');
+        $totalPayable    = $allPassengersForDate->sum('payable_amount');
+        $totalSeatsSold  = $allPassengersForDate->sum('total_seats');
 
         // Query for the passenger table
         $query = $bus->passengers()->whereDate('journey_date', $selectedDate);
@@ -75,7 +83,7 @@ class BusController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->input('sort_by', 'created_at');
+        $sortBy  = $request->input('sort_by', 'created_at');
         $sortDir = $request->input('sort_dir', 'desc');
         $validSortColumns = ['seat_number', 'passenger_name', 'total_amount', 'payable_amount', 'created_at'];
         
@@ -84,6 +92,10 @@ class BusController extends Controller
         }
 
         $passengers = $query->paginate(50)->withQueryString();
+
+        // Build seat list dynamically
+        $totalSeats  = $bus->total_seats  ?? 40;
+        $seatLayout  = $bus->seat_layout  ?? '2x2';
 
         return view('buses.show', compact(
             'bus', 
@@ -96,7 +108,9 @@ class BusController extends Controller
             'totalSeatsSold',
             'selectedDate',
             'sortBy',
-            'sortDir'
+            'sortDir',
+            'totalSeats',
+            'seatLayout'
         ));
     }
 
@@ -110,8 +124,8 @@ class BusController extends Controller
             ->orderBy('seat_number')
             ->get();
 
-        $totalRevenue = $passengers->sum('total_amount');
-        $totalPayable = $passengers->sum('payable_amount');
+        $totalRevenue    = $passengers->sum('total_amount');
+        $totalPayable    = $passengers->sum('payable_amount');
         $totalCommission = $passengers->sum('commission_amount');
 
         return view('buses.register', compact('bus', 'passengers', 'selectedDate', 'totalRevenue', 'totalPayable', 'totalCommission'));
@@ -125,13 +139,21 @@ class BusController extends Controller
     public function update(Request $request, Bus $bus)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'         => 'required|string|max:255',
             'plate_number' => 'required|string|max:255|unique:buses,plate_number,' . $bus->id,
+            'bus_type'     => 'required|in:Personal,Commission',
+            'total_seats'  => 'required|integer|min:1|max:60',
+            'ac_non_ac'    => 'required|in:AC,Non AC',
+            'seat_layout'  => 'required|in:1x2,2x2',
         ]);
 
         $bus->update([
-            'name' => $request->name,
+            'name'         => $request->name,
             'plate_number' => $request->plate_number,
+            'bus_type'     => $request->bus_type,
+            'total_seats'  => $request->total_seats,
+            'ac_non_ac'    => $request->ac_non_ac,
+            'seat_layout'  => $request->seat_layout,
         ]);
 
         return redirect()->route('buses.index')->with('success', 'Bus updated successfully.');

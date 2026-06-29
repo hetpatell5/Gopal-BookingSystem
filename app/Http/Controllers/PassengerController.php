@@ -12,21 +12,27 @@ class PassengerController extends Controller
     public function create(Request $request)
     {
         $buses = Bus::all();
-        $selectedBusId = $request->input('bus_id');
-        $selectedDate = $request->input('date', now()->format('Y-m-d'));
-        
-        $bookedSeats = [];
+        $selectedBusId   = $request->input('bus_id');
+        $selectedDate    = $request->input('date', now()->format('Y-m-d'));
+        $busTypeFilter   = $request->input('bus_type_filter', '');
+
+        $bookedSeats  = [];
         $passengerData = [];
+        $selectedBus   = null;
+        $totalSeats    = 40;
+        $seatLayout    = '2x2';
 
         if ($selectedBusId) {
-            $bus = Bus::find($selectedBusId);
-            if ($bus) {
-                $passengers = $bus->passengers()->whereDate('journey_date', $selectedDate)->get();
+            $selectedBus = Bus::find($selectedBusId);
+            if ($selectedBus) {
+                $totalSeats = $selectedBus->total_seats ?? 40;
+                $seatLayout = $selectedBus->seat_layout ?? '2x2';
+                $passengers = $selectedBus->passengers()->whereDate('journey_date', $selectedDate)->get();
                 foreach ($passengers as $passenger) {
                     $seats = array_map('trim', explode(',', $passenger->seat_number));
                     foreach ($seats as $seat) {
                         if (!empty($seat)) {
-                            $bookedSeats[] = $seat;
+                            $bookedSeats[]      = $seat;
                             $passengerData[$seat] = $passenger;
                         }
                     }
@@ -34,7 +40,11 @@ class PassengerController extends Controller
             }
         }
 
-        return view('passengers.create', compact('buses', 'selectedBusId', 'selectedDate', 'bookedSeats', 'passengerData'));
+        return view('passengers.create', compact(
+            'buses', 'selectedBusId', 'selectedDate',
+            'bookedSeats', 'passengerData', 'selectedBus',
+            'totalSeats', 'seatLayout', 'busTypeFilter'
+        ));
     }
 
     public function index(Request $request)

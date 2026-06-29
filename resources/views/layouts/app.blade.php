@@ -53,7 +53,7 @@
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Top Navbar -->
         <!-- Top Navbar -->
-        <header class="bg-white flex items-center justify-between px-8 shrink-0 shadow-sm z-10 border-b border-gray-100" style="height: 60px;">
+        <header class="bg-white flex items-center justify-between px-8 shrink-0 shadow-sm border-b border-gray-100 relative z-50" style="height: 60px;">
             <!-- Left Side: Page Title -->
             <div class="flex items-center">
                 <button id="sidebarToggleBtn" class="mr-5 text-gray-400 hover:text-[#f0b44b] transition-colors focus:outline-none" style="margin-right: 20px;">
@@ -104,16 +104,18 @@
                     <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 hidden md:block transition-transform group-hover:rotate-180"></i>
                     
                     <!-- Dropdown Menu -->
-                    <div class="absolute right-0 top-full mt-3 w-48 bg-white rounded-none shadow-xl py-1 hidden group-hover:block border border-gray-100 z-50">
-                        <a href="{{ route('settings.index') }}" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#f0b44b] transition-colors border-b border-gray-100">
-                            <i class="fa-solid fa-gear mr-2"></i> Settings
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors">
-                                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout
-                            </button>
-                        </form>
+                    <div class="absolute right-0 top-full pt-3 w-48 hidden group-hover:block z-[9999]">
+                        <div class="bg-white rounded-none shadow-xl py-1 border border-gray-100">
+                            <a href="{{ route('settings.index') }}" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-[#f0b44b] transition-colors border-b border-gray-100">
+                                <i class="fa-solid fa-gear mr-2"></i> Settings
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2.5 text-[13px] font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                                    <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 @endauth
