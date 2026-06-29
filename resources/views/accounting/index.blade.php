@@ -74,7 +74,12 @@
             <button type="submit" class="bg-[#1c2238] text-white font-bold text-[13px] px-5 py-2 rounded hover:bg-[#29324b] transition-colors">
                 <i class="fa-solid fa-filter mr-1.5 text-[#f0b44b]"></i> Apply
             </button>
-            <a href="{{ route('accounting.index') }}" class="bg-gray-100 text-gray-600 font-semibold text-[13px] px-4 py-2 rounded hover:bg-gray-200 transition-colors">
+            <button type="submit" name="action" value="export_pdf" 
+                    onclick="if(!document.querySelector('input[name=date_from]').value || !document.querySelector('input[name=date_to]').value) { alert('Please select both From and To dates to print the ledger.'); return false; }"
+                    class="bg-[#f0b44b] text-[#1c2238] font-bold text-[13px] px-5 py-2 rounded hover:bg-[#e0a23b] transition-colors shadow-sm">
+                <i class="fa-solid fa-print mr-1.5"></i> Print
+            </button>
+            <a href="{{ route('accounting.index') }}" class="bg-gray-100 text-gray-600 font-semibold text-[13px] px-4 py-2 rounded hover:bg-gray-200 transition-colors flex items-center">
                 Reset
             </a>
         </div>
@@ -148,8 +153,8 @@
 .ld-subtotal td { background:#f3f4f6; border-top:2px solid #d1d5db; border-bottom:none !important; font-weight:700; font-size:13px; }
 /* Grand Total row */
 .ld-grand td { background:#192132; color:#fff; border-top:3px solid #0f1623; border-bottom:none !important; font-weight:700; font-size:14px; padding:14px 16px; }
-.r { text-align:right; }
-.c { text-align:center; }
+.r { text-align:right !important; }
+.c { text-align:center !important; }
 .t-mut { color:#9ca3af; }
 .t-grn { color:#059669; }
 .t-ros { color:#e11d48; }

@@ -137,13 +137,13 @@
         <!-- Journey Date -->
         <div class="flex-1">
             <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Journey Date</label>
-            <input type="date" name="date" value="{{ $selectedDate }}"
-                   onchange="document.getElementById('busSelectForm').submit()"
-                   class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+            <div class="flex gap-2">
+                <input type="date" name="date" value="{{ $selectedDate }}"
+                       class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
+                <button type="submit" class="bg-[#1c2238] text-white px-4 py-2 text-[13px] font-bold uppercase tracking-wider hover:bg-[#29324b] transition-colors whitespace-nowrap">Load</button>
+            </div>
         </div>
 
-        <!-- Hidden to preserve bus_type_filter when date changes etc. -->
-        <input type="hidden" name="bus_type_filter" value="{{ $busTypeFilter }}">
     </form>
 </div>
 

@@ -49,11 +49,6 @@ class PassengerController extends Controller
 
     public function index(Request $request)
     {
-        // Default to today's date if no query parameters are provided
-        if (empty($request->query())) {
-            return redirect()->route('passengers.index', ['date' => now()->format('Y-m-d')]);
-        }
-
         $buses = Bus::all();
         $query = Passenger::with('bus');
 

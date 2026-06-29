@@ -72,6 +72,21 @@ class AccountingController extends Controller
             ')
             ->first();
 
+        if ($request->action === 'export_pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('accounting.pdf', compact(
+                'buses', 'accountingData', 'personalData', 'commissionData', 'request'
+            ));
+            // Setting paper to A4 landscape for better column fit
+            $pdf->setPaper('a4', 'landscape');
+            
+            $fileName = 'ledger_statement_';
+            if ($request->filled('date_from')) $fileName .= $request->date_from . '_';
+            if ($request->filled('date_to')) $fileName .= $request->date_to;
+            else $fileName .= date('Y_m_d');
+            
+            return $pdf->download($fileName . '.pdf');
+        }
+
         return view('accounting.index', compact(
             'buses', 'accountingData', 'personalData', 'commissionData'
         ));
