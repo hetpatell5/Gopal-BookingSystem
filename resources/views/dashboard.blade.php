@@ -37,7 +37,7 @@
 
     {{-- Buses --}}
     <a href="{{ route('buses.index') }}"
-       class="group bg-white rounded-none p-5 flex flex-col items-start gap-3 shadow-sm border-t-4 border-[#f0b44b] hover:shadow-md transition-all">
+       class="group bg-white rounded-none p-5 flex flex-col items-start gap-3 shadow-sm hover:shadow-md transition-all">
         <div class="w-10 h-10 bg-[#f0b44b]/10 rounded-none flex items-center justify-center">
             <i class="fa-solid fa-bus text-[#f0b44b] text-lg"></i>
         </div>
@@ -50,7 +50,7 @@
 
     {{-- Forms --}}
     <a href="{{ route('forms.index') }}"
-       class="group bg-white rounded-none p-5 flex flex-col items-start gap-3 shadow-sm border-t-4 border-[#6366f1] hover:shadow-md transition-all">
+       class="group bg-white rounded-none p-5 flex flex-col items-start gap-3 shadow-sm hover:shadow-md transition-all">
         <div class="w-10 h-10 bg-[#6366f1]/10 rounded-none flex items-center justify-center">
             <i class="fa-solid fa-clipboard-list text-[#6366f1] text-lg"></i>
         </div>
@@ -68,25 +68,25 @@
 {{-- ══════════════════════════════════════════════════════════════ --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-    <div class="bg-white rounded-none p-5 shadow-sm border-l-4 border-[#f0b44b]">
+    <div class="bg-white rounded-none p-5 shadow-sm">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Today's Bookings</p>
         <p class="text-3xl font-black text-[#1c2238]">{{ $bookingsToday }}</p>
         <p class="text-[12px] font-semibold text-gray-500 mt-1.5">{{ $bookingsMonth }} this month</p>
     </div>
 
-    <div class="bg-white rounded-none p-5 shadow-sm border-l-4 border-green-500">
+    <div class="bg-white rounded-none p-5 shadow-sm">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Today's Revenue</p>
         <p class="text-3xl font-black text-green-600">₹{{ number_format($revenueToday, 0) }}</p>
         <p class="text-[12px] font-semibold text-gray-500 mt-1.5">₹{{ number_format($revenueMonth, 0) }} this month</p>
     </div>
 
-    <div class="bg-white rounded-none p-5 shadow-sm border-l-4 border-[#f0b44b]">
+    <div class="bg-white rounded-none p-5 shadow-sm">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Commission Earned</p>
         <p class="text-3xl font-black text-[#d97706]">₹{{ number_format($commissionEarned, 0) }}</p>
         <p class="text-[12px] font-semibold text-gray-500 mt-1.5">Today · commission buses</p>
     </div>
 
-    <div class="bg-white rounded-none p-5 shadow-sm border-l-4 border-blue-500">
+    <div class="bg-white rounded-none p-5 shadow-sm">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">All Passengers</p>
         <p class="text-3xl font-black text-blue-600">{{ $totalPassengers }}</p>
         <p class="text-[12px] font-semibold text-gray-500 mt-1.5">total bookings ever</p>

@@ -69,6 +69,11 @@
                             <a href="{{ route('tickets.show', $ticket->id) }}" target="_blank" class="text-gray-500 hover:text-green-600 transition-colors" title="Print Ticket">
                                 <i class="fa-solid fa-print text-[16px]"></i>
                             </a>
+                            
+                            <!-- PDF Button -->
+                            <a href="{{ route('tickets.pdf', $ticket->id) }}" class="text-gray-500 hover:text-red-600 transition-colors" title="Download PDF">
+                                <i class="fa-solid fa-file-pdf text-[16px]"></i>
+                            </a>
 
                             <!-- Edit Button -->
                             <a href="{{ route('passengers.edit', $ticket->id) }}" class="text-gray-500 hover:text-blue-600 transition-colors" title="Edit Booking">

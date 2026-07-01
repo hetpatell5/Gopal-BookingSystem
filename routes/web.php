@@ -26,19 +26,25 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/passengers/register', [PassengerController::class, 'printRegister'])->name('passengers.register');
     Route::post('/passengers/bulk-delete', [PassengerController::class, 'bulkDestroy'])->name('passengers.bulk_destroy');
+    Route::post('/passengers/{passenger}/toggle-hisab', [PassengerController::class, 'toggleHisab'])->name('passengers.toggle_hisab');
     Route::resource('passengers', PassengerController::class);
     
     Route::get('/accounting', [AccountingController::class, 'index'])->name('accounting.index');
+    Route::get('/accounting/{bus}', [AccountingController::class, 'show'])->name('accounting.show');
     
     Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/{ticket}', [App\Http\Controllers\TicketController::class, 'show'])->name('tickets.show');
+    Route::get('/tickets/{ticket}/pdf', [App\Http\Controllers\TicketController::class, 'downloadPdf'])->name('tickets.pdf');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
+    Route::get('/personal-accounts', function () { return view('personal-accounts.index'); })->name('personal-accounts.index');
+
     // Forms: admin CRUD
     Route::get('/forms',                 [FormController::class, 'index'])  ->name('forms.index');
     Route::get('/forms/create',          [FormController::class, 'create']) ->name('forms.create');
+    Route::get('/forms/contract',        function() { return view('forms.contract'); })->name('forms.contract');
     Route::post('/forms',                [FormController::class, 'store'])  ->name('forms.store');
     Route::get('/forms/{form}/edit',     [FormController::class, 'edit'])   ->name('forms.edit');
     Route::put('/forms/{form}',          [FormController::class, 'update']) ->name('forms.update');

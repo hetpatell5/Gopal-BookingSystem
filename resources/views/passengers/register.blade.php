@@ -105,7 +105,7 @@
                 <th width="8%">બસ<br>(Bus)</th>
                 @endif
                 <th width="5%">સીટ નં.<br>(Seat)</th>
-                <th width="12%">ગામ<br>(Village)</th>
+                <th width="12%">રૂટ<br>(Route)</th>
                 <th width="20%">નામ<br>(Name)</th>
                 <th width="12%">ફોન નં.<br>(Phone)</th>
                 <th width="12%">ટ્રાવેલ્સ<br>(Travels)</th>
@@ -126,7 +126,7 @@
                 </td>
                 @endif
                 <td><strong>{{ $passenger->seat_number }}</strong></td>
-                <td class="text-left">{{ $passenger->village_name ?: '-' }}</td>
+                <td class="text-left">{{ $passenger->from_place }} {{ $passenger->to_place ? ' - '.$passenger->to_place : '' }}</td>
                 <td class="text-left">{{ $passenger->passenger_name }}</td>
                 <td>{{ $passenger->passenger_mobile }}</td>
                 <td class="text-left">{{ $passenger->traveler_name ?: '-' }}</td>

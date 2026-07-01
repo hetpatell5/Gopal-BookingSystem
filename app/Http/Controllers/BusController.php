@@ -59,14 +59,8 @@ class BusController extends Controller
             }
         }
 
-        // Accounting Data for this bus map
-        $totalRevenue    = $allPassengersForDate->sum('total_amount');
-        $totalCommission = $allPassengersForDate->sum('commission_amount');
-        $totalPayable    = $allPassengersForDate->sum('payable_amount');
-        $totalSeatsSold  = $allPassengersForDate->sum('total_seats');
-
-        // Query for the passenger table
-        $query = $bus->passengers()->whereDate('journey_date', $selectedDate);
+        // Query for the passenger table (Show all bookings for this bus by default)
+        $query = $bus->passengers();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -82,10 +76,21 @@ class BusController extends Controller
             $query->where('ac_type', $request->ac_type);
         }
 
+        if ($request->filled('filter_date')) {
+            $query->whereDate('journey_date', $request->filter_date);
+        }
+
+        // Accounting Data based on filtered query
+        $filteredStats = (clone $query)->get();
+        $totalRevenue    = $filteredStats->sum('total_amount');
+        $totalCommission = $filteredStats->sum('commission_amount');
+        $totalPayable    = $filteredStats->sum('payable_amount');
+        $totalSeatsSold  = $filteredStats->sum('total_seats');
+
         // Sorting
-        $sortBy  = $request->input('sort_by', 'created_at');
+        $sortBy  = $request->input('sort_by', 'journey_date');
         $sortDir = $request->input('sort_dir', 'desc');
-        $validSortColumns = ['seat_number', 'passenger_name', 'total_amount', 'payable_amount', 'created_at'];
+        $validSortColumns = ['seat_number', 'passenger_name', 'total_amount', 'payable_amount', 'created_at', 'journey_date'];
         
         if (in_array($sortBy, $validSortColumns) && in_array(strtolower($sortDir), ['asc', 'desc'])) {
             $query->orderBy($sortBy, $sortDir);
@@ -116,13 +121,41 @@ class BusController extends Controller
 
     public function printRegister(Request $request, Bus $bus)
     {
-        $selectedDate = $request->input('journey_date', now()->format('Y-m-d'));
+        $query = $bus->passengers();
 
-        // Fetch passengers for the selected date on this bus
-        $passengers = \App\Models\Passenger::where('bus_id', $bus->id)
-            ->whereDate('journey_date', $selectedDate)
-            ->orderBy('seat_number')
-            ->get();
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('passenger_name', 'like', "%{$search}%")
+                  ->orWhere('passenger_mobile', 'like', "%{$search}%")
+                  ->orWhere('seat_number', 'like', "%{$search}%")
+                  ->orWhere('pickup_stop', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('ac_type')) {
+            $query->where('ac_type', $request->ac_type);
+        }
+
+        if ($request->filled('filter_date')) {
+            $query->whereDate('journey_date', $request->filter_date);
+            $selectedDate = \Carbon\Carbon::parse($request->filter_date)->format('d M, Y');
+        } else {
+            $selectedDate = 'All Dates';
+        }
+
+        // Sorting
+        $sortBy  = $request->input('sort_by', 'journey_date');
+        $sortDir = $request->input('sort_dir', 'desc');
+        $validSortColumns = ['seat_number', 'passenger_name', 'total_amount', 'payable_amount', 'created_at', 'journey_date'];
+        
+        if (in_array($sortBy, $validSortColumns) && in_array(strtolower($sortDir), ['asc', 'desc'])) {
+            $query->orderBy($sortBy, $sortDir);
+        } else {
+            $query->orderBy('journey_date', 'desc');
+        }
+
+        $passengers = $query->get();
 
         $totalRevenue    = $passengers->sum('total_amount');
         $totalPayable    = $passengers->sum('payable_amount');

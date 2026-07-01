@@ -137,7 +137,7 @@
                 <h2 class="text-[16px] font-bold text-[#1c2238]">Site Appearance</h2>
             </div>
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
                     <!-- Site Logo -->
                     <div class="group border border-gray-200 relative p-1">
@@ -176,6 +176,28 @@
                             <label class="cursor-pointer px-4 py-1.5 bg-white border border-gray-300 text-gray-600 text-[11px] font-bold rounded-none shadow-sm hover:border-[#f0b44b] hover:text-[#f0b44b] transition-colors">
                                 Browse File
                                 <input type="file" name="site_favicon" accept=".ico,.png,.jpg,.jpeg" class="hidden file-input">
+                            </label>
+                            <span class="file-name text-[10px] text-[#f0b44b] font-bold mt-2 hidden truncate max-w-full px-2"></span>
+                        </div>
+                    </div>
+
+                    <!-- Login Image -->
+                    <div class="group border border-gray-200 relative p-1">
+                        <div class="bg-gray-50 p-5 h-full flex flex-col items-center text-center justify-center border border-dashed border-gray-300 group-hover:bg-[#fcf8f2] group-hover:border-[#f0b44b] transition-colors relative">
+                            <div class="mb-3">
+                                @if(file_exists(public_path('images/login-image.png')))
+                                    <div class="h-12 w-full mx-auto bg-white border border-gray-200 flex items-center justify-center p-1.5 shadow-sm">
+                                        <img src="{{ asset('images/login-image.png') }}?v={{ time() }}" alt="Login Image" class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <i class="fa-solid fa-image text-3xl text-gray-300 group-hover:text-[#f0b44b]"></i>
+                                @endif
+                            </div>
+                            <h4 class="text-[13px] font-bold text-gray-700">Login Page Image</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 mb-3">Split image for login screen.</p>
+                            <label class="cursor-pointer px-4 py-1.5 bg-white border border-gray-300 text-gray-600 text-[11px] font-bold rounded-none shadow-sm hover:border-[#f0b44b] hover:text-[#f0b44b] transition-colors">
+                                Browse File
+                                <input type="file" name="login_image" accept="image/*" class="hidden file-input">
                             </label>
                             <span class="file-name text-[10px] text-[#f0b44b] font-bold mt-2 hidden truncate max-w-full px-2"></span>
                         </div>

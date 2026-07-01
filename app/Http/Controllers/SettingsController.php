@@ -27,6 +27,7 @@ class SettingsController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'site_logo' => 'nullable|image|max:2048',
             'site_favicon' => 'nullable|file|mimes:ico,png,jpg,jpeg|max:1024',
+            'login_image' => 'nullable|image|max:5120',
             'whatsapp_number' => 'nullable|string|max:20',
         ]);
 
@@ -54,6 +55,10 @@ class SettingsController extends Controller
 
         if ($request->hasFile('site_favicon')) {
             $request->file('site_favicon')->move(public_path(), 'favicon.ico');
+        }
+
+        if ($request->hasFile('login_image')) {
+            $request->file('login_image')->move(public_path('images'), 'login-image.png');
         }
 
         $user->save();

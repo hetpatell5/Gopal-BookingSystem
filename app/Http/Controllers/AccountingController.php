@@ -91,4 +91,41 @@ class AccountingController extends Controller
             'buses', 'accountingData', 'personalData', 'commissionData'
         ));
     }
+
+    public function show(Request $request, Bus $bus)
+    {
+        $query = Passenger::where('bus_id', $bus->id)
+            ->when($request->filled('date_from'), fn($q) => $q->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->filled('date_to'),   fn($q) => $q->whereDate('created_at', '<=', $request->date_to));
+
+        $bookings = (clone $query)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totals = (clone $query)
+            ->selectRaw('
+                COUNT(id) as total_bookings,
+                SUM(total_seats) as total_seats_sold,
+                SUM(total_amount) as total_revenue,
+                SUM(payable_amount) as total_advance,
+                SUM(total_amount - payable_amount) as total_pending,
+                SUM(commission_amount) as total_commission,
+                SUM(total_amount - commission_amount) as total_net_revenue
+            ')
+            ->first();
+
+        if ($request->action === 'export_pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('accounting.show_pdf', compact('bus', 'bookings', 'totals', 'request'));
+            $pdf->setPaper('a4', 'portrait');
+            
+            $fileName = 'bus_' . str_replace(' ', '_', strtolower($bus->name)) . '_hisab_';
+            if ($request->filled('date_from')) $fileName .= $request->date_from . '_';
+            if ($request->filled('date_to')) $fileName .= $request->date_to;
+            else $fileName .= date('Y_m_d');
+            
+            return $pdf->download($fileName . '.pdf');
+        }
+
+        return view('accounting.show', compact('bus', 'bookings', 'totals'));
+    }
 }

@@ -67,8 +67,6 @@
 @endif
 
 <div class="bg-white rounded-none shadow-sm overflow-hidden mb-6">
-    <form id="bulk-action-form" method="POST" action="{{ route('passengers.bulk_destroy') }}">
-        @csrf
         <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
             <h2 class="text-[17px] font-bold text-[#1c2238] flex items-center">
                 Passenger Records
@@ -149,8 +147,9 @@
                         <span class="text-[12px] text-gray-500 font-medium">{{ $passenger->passenger_mobile ?: 'No Phone' }}</span>
                     </td>
                     <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">
-                        Total: ₹{{ $passenger->total_amount }}<br>
-                        <span class="text-green-600 font-bold">Pay: ₹{{ $passenger->payable_amount }}</span>
+                        Rate: ₹{{ number_format($passenger->per_seat_price ?? 0, 2) }}<br>
+                        Total: ₹{{ number_format($passenger->total_amount, 2) }}<br>
+                        <span class="text-green-600 font-bold">Pay: ₹{{ number_format($passenger->payable_amount, 2) }}</span>
                     </td>
                     <td class="px-6 py-4 text-[13px] text-gray-500 max-w-[150px] truncate" title="{{ $passenger->note }}">
                         {{ $passenger->note ?: '-' }}
@@ -208,8 +207,12 @@
             {{ $passengers->links() }}
         </div>
         @endif
-    </form>
 </div>
+
+<form id="bulk-action-form" method="POST" action="{{ route('passengers.bulk_destroy') }}" style="display: none;">
+    @csrf
+    <div id="bulk-inputs-container"></div>
+</form>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -243,6 +246,15 @@
 
         bulkDeleteBtn.addEventListener('click', function() {
             if (confirm('Are you sure you want to permanently delete the selected passengers?')) {
+                const container = document.getElementById('bulk-inputs-container');
+                container.innerHTML = '';
+                document.querySelectorAll('.row-checkbox:checked').forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'passenger_ids[]';
+                    input.value = cb.value;
+                    container.appendChild(input);
+                });
                 bulkActionForm.submit();
             }
         });

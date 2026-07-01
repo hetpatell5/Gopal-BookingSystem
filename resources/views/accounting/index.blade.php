@@ -88,7 +88,7 @@
 
 {{-- ── Summary KPI Cards ─────────────────────────────────────────────────── --}}
 <div class="flex flex-nowrap overflow-x-auto gap-4 mb-6 pb-2 w-full">
-    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100 border-l-4 border-l-amber-500">
+    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Bookings</p>
         <p class="text-[28px] font-black text-[#1c2238] leading-none mb-1">{{ $totalBookings }}</p>
         <div class="flex items-center gap-2 flex-wrap">
@@ -96,25 +96,25 @@
         </div>
     </div>
 
-    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100 border-l-4 border-l-green-500">
+    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
         <p class="text-[28px] font-black text-green-600 leading-none mb-1">₹{{ number_format($grandRev, 0) }}</p>
         <p class="text-[11px] text-gray-500">Total billed to passengers</p>
     </div>
 
-    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100 border-l-4 border-l-blue-500">
+    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Advance Collected</p>
         <p class="text-[28px] font-black text-blue-600 leading-none mb-1">₹{{ number_format($grandAdv, 0) }}</p>
         <p class="text-[11px] text-gray-500">Received upfront from passengers</p>
     </div>
 
-    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100 border-l-4 border-l-rose-500">
+    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pending (Baki)</p>
         <p class="text-[28px] font-black text-rose-500 leading-none mb-1">₹{{ number_format($grandPend, 0) }}</p>
         <p class="text-[11px] text-gray-500">Still owed by passengers</p>
     </div>
 
-    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100 border-l-4 border-l-indigo-500">
+    <div class="flex-1 min-w-[220px] bg-white shadow-sm p-4 border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Revenue</p>
         <p class="text-[28px] font-black text-indigo-600 leading-none mb-1">₹{{ number_format($grandNet, 0) }}</p>
         <p class="text-[11px] text-gray-500">After deducting commission</p>
@@ -170,7 +170,7 @@
   {{-- Header --}}
   <div class="ld-header">
     <div class="ld-title">
-      <div class="ld-icon">📖</div>
+      <div class="ld-icon"><i class="fa-solid fa-book-open text-[#f0b44b]"></i></div>
       <div>
         <h2>Bus Ledger</h2>
         <p>Revenue, advance, pending & commission per bus</p>
@@ -183,128 +183,55 @@
     </div>
   </div>
 
-  {{-- ── PERSONAL TABLE ── --}}
+  {{-- ── PERSONAL BUSES ── --}}
   @if($personalBuses->count() && $activeType !== 'Commission')
   <div>
-    <div class="ld-sec-hdr">🚌 &nbsp;Personal Buses</div>
-    <table class="ld-table">
-      <thead>
-        <tr>
-          <th style="width:44px">#</th>
-          <th>Bus Name</th>
-          <th>Plate No.</th>
-          <th class="c">Bookings</th>
-          <th class="c">Seats</th>
-          <th class="r">Gross Revenue</th>
-          <th class="r">Advance Paid</th>
-          <th class="r">Pending (Baki)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($personalBuses as $i => $bus)
-          @php
-            $d    = $accountingData->get($bus->id);
-            $rev  = $d->total_revenue ?? 0;
-            $adv  = $d->total_advance ?? 0;
-            $pend = $d->total_pending ?? 0;
-          @endphp
-          <tr>
-            <td class="t-mut">{{ $i + 1 }}</td>
-            <td class="t-b">{{ $bus->name }}</td>
-            <td class="t-mut" style="font-family:monospace;font-size:12px">{{ $bus->plate_number }}</td>
-            <td class="c">{{ $d->total_bookings ?? 0 }}</td>
-            <td class="c">{{ $d->total_seats_sold ?? 0 }}</td>
-            <td class="r t-b">₹{{ number_format($rev, 2) }}</td>
-            <td class="r t-sky">₹{{ number_format($adv, 2) }}</td>
-            <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($pend, 2) }}</td>
-          </tr>
-        @endforeach
-      </tbody>
-      <tfoot>
-        <tr class="ld-subtotal">
-          <td colspan="5" class="r">Personal Subtotal</td>
-          <td class="r">₹{{ number_format($pRev, 2) }}</td>
-          <td class="r t-sky">₹{{ number_format($pAdv, 2) }}</td>
-          <td class="r {{ $pPend > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($pPend, 2) }}</td>
-        </tr>
-        @if($activeType === 'Personal')
-        <tr class="ld-grand">
-          <td colspan="5" style="font-size:15px;letter-spacing:0.01em">Grand Total</td>
-          <td class="r t-wht" style="font-size:15px">₹{{ number_format($grandRev, 2) }}</td>
-          <td class="r t-sky" style="font-size:15px">₹{{ number_format($grandAdv, 2) }}</td>
-          <td class="r {{ $grandPend > 0 ? 't-ros' : 't-egrn' }}" style="font-size:15px">₹{{ number_format($grandPend, 2) }}</td>
-        </tr>
-        @endif
-      </tfoot>
-    </table>
+    <div class="ld-sec-hdr"><i class="fa-solid fa-bus text-[#f0b44b] mr-2"></i> Personal Buses</div>
+    <div class="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gray-50/50">
+      @foreach($personalBuses as $bus)
+        <a href="{{ route('accounting.show', $bus->id) }}?{{ request()->getQueryString() }}" class="block bg-white border border-gray-200 rounded-none p-5 hover:border-[#f0b44b] transition-all group relative">
+          <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-none bg-white border border-gray-100 flex items-center justify-center text-[#f0b44b] group-hover:bg-[#f0b44b] group-hover:text-[#1c2238] transition-colors shadow-sm">
+                  <i class="fa-solid fa-bus text-lg"></i>
+              </div>
+              <div>
+                  <h3 class="font-bold text-[#1c2238] text-[15px] tracking-wide uppercase mb-1">{{ $bus->name }}</h3>
+                  <p class="text-[11px] font-bold text-gray-500 font-mono tracking-widest">{{ $bus->plate_number }}</p>
+              </div>
+          </div>
+          <div class="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
+              <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-[#f0b44b] transition-colors">View Ledger</span>
+              <i class="fa-solid fa-arrow-right text-gray-300 group-hover:text-[#f0b44b] transition-colors text-sm"></i>
+          </div>
+        </a>
+      @endforeach
+    </div>
   </div>
   @endif
 
-  {{-- ── COMMISSION TABLE ── --}}
+  {{-- ── COMMISSION BUSES ── --}}
   @if($commissionBuses->count() && $activeType !== 'Personal')
   <div>
-    <div class="ld-sec-hdr">🤝 &nbsp;Commission Buses</div>
-    <table class="ld-table">
-      <thead>
-        <tr>
-          <th style="width:44px">#</th>
-          <th>Bus Name</th>
-          <th>Plate No.</th>
-          <th class="c">Bookings</th>
-          <th class="c">Seats</th>
-          <th class="r">Gross Revenue</th>
-          <th class="r">Advance Paid</th>
-          <th class="r">Pending (Baki)</th>
-          <th class="r">Commission</th>
-          <th class="r">Net to Owner</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach($commissionBuses as $i => $bus)
-          @php
-            $d    = $accountingData->get($bus->id);
-            $rev  = $d->total_revenue     ?? 0;
-            $adv  = $d->total_advance     ?? 0;
-            $pend = $d->total_pending     ?? 0;
-            $comm = $d->total_commission  ?? 0;
-            $net  = $d->total_net_revenue ?? 0;
-          @endphp
-          <tr>
-            <td class="t-mut">{{ $i + 1 }}</td>
-            <td class="t-b">{{ $bus->name }}</td>
-            <td class="t-mut" style="font-family:monospace;font-size:12px">{{ $bus->plate_number }}</td>
-            <td class="c">{{ $d->total_bookings ?? 0 }}</td>
-            <td class="c">{{ $d->total_seats_sold ?? 0 }}</td>
-            <td class="r t-b">₹{{ number_format($rev, 2) }}</td>
-            <td class="r t-sky">₹{{ number_format($adv, 2) }}</td>
-            <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($pend, 2) }}</td>
-            <td class="r t-blu">₹{{ number_format($comm, 2) }}</td>
-            <td class="r t-b t-grn">₹{{ number_format($net, 2) }}</td>
-          </tr>
-        @endforeach
-      </tbody>
-      <tfoot>
-        <tr class="ld-subtotal">
-          <td colspan="5" class="r">Commission Subtotal</td>
-          <td class="r">₹{{ number_format($cRev, 2) }}</td>
-          <td class="r t-sky">₹{{ number_format($cAdv, 2) }}</td>
-          <td class="r {{ $cPend > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($cPend, 2) }}</td>
-          <td class="r t-blu">₹{{ number_format($cComm, 2) }}</td>
-          <td class="r t-b t-grn">₹{{ number_format($cNet, 2) }}</td>
-        </tr>
-        @if($activeType === 'Commission')
-        {{-- Grand Total inside this table when only Commission is active --}}
-        <tr class="ld-grand">
-          <td colspan="5" style="font-size:15px">Grand Total</td>
-          <td class="r t-wht" style="font-size:15px">₹{{ number_format($grandRev, 2) }}</td>
-          <td class="r t-sky" style="font-size:15px">₹{{ number_format($grandAdv, 2) }}</td>
-          <td class="r {{ $grandPend > 0 ? 't-ros' : 't-egrn' }}" style="font-size:15px">₹{{ number_format($grandPend, 2) }}</td>
-          <td class="r t-blu" style="font-size:15px">₹{{ number_format($grandComm, 2) }}</td>
-          <td class="r t-egrn" style="font-size:15px;font-weight:800">₹{{ number_format($grandNet, 2) }}</td>
-        </tr>
-        @endif
-      </tfoot>
-    </table>
+    <div class="ld-sec-hdr"><i class="fa-solid fa-handshake text-[#1c2238] mr-2"></i> Commission Buses</div>
+    <div class="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gray-50/50">
+      @foreach($commissionBuses as $bus)
+        <a href="{{ route('accounting.show', $bus->id) }}?{{ request()->getQueryString() }}" class="block bg-white border border-gray-200 rounded-none p-5 hover:border-[#1c2238] transition-all group relative">
+          <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-none bg-white border border-gray-100 flex items-center justify-center text-[#1c2238] group-hover:bg-[#1c2238] group-hover:text-white transition-colors shadow-sm">
+                  <i class="fa-solid fa-handshake text-lg"></i>
+              </div>
+              <div>
+                  <h3 class="font-bold text-[#1c2238] text-[15px] tracking-wide uppercase mb-1">{{ $bus->name }}</h3>
+                  <p class="text-[11px] font-bold text-gray-500 font-mono tracking-widest">{{ $bus->plate_number }}</p>
+              </div>
+          </div>
+          <div class="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
+              <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-[#1c2238] transition-colors">View Ledger</span>
+              <i class="fa-solid fa-arrow-right text-gray-300 group-hover:text-[#1c2238] transition-colors text-sm"></i>
+          </div>
+        </a>
+      @endforeach
+    </div>
   </div>
   @endif
 
@@ -314,7 +241,7 @@
     {{-- Personal row --}}
     @if($personalBuses->count())
     <div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px solid #2d3654;">
-      <span style="flex:1; font-size:13px; font-weight:600; color:#94a3b8;">🚌 Personal Total</span>
+      <span style="flex:1; font-size:13px; font-weight:600; color:#94a3b8;"><i class="fa-solid fa-bus text-[#f0b44b] mr-1.5"></i> Personal Total</span>
       <span style="width:160px; text-align:right; font-size:14px; font-weight:700; color:#fff;">₹{{ number_format($pRev, 2) }}</span>
       <span style="width:160px; text-align:right; font-size:14px; color:#0ea5e9;">₹{{ number_format($pAdv, 2) }}</span>
       <span style="width:160px; text-align:right; font-size:14px; color:{{ $pPend > 0 ? '#f43f5e' : '#34d399' }};">₹{{ number_format($pPend, 2) }}</span>
@@ -325,7 +252,7 @@
     {{-- Commission row --}}
     @if($commissionBuses->count())
     <div style="display:flex; align-items:center; padding:6px 0; border-bottom:1px solid #2d3654;">
-      <span style="flex:1; font-size:13px; font-weight:600; color:#94a3b8;">🤝 Commission Total</span>
+      <span style="flex:1; font-size:13px; font-weight:600; color:#94a3b8;"><i class="fa-solid fa-handshake text-[#6366f1] mr-1.5"></i> Commission Total</span>
       <span style="width:160px; text-align:right; font-size:14px; font-weight:700; color:#fff;">₹{{ number_format($cRev, 2) }}</span>
       <span style="width:160px; text-align:right; font-size:14px; color:#0ea5e9;">₹{{ number_format($cAdv, 2) }}</span>
       <span style="width:160px; text-align:right; font-size:14px; color:{{ $cPend > 0 ? '#f43f5e' : '#34d399' }};">₹{{ number_format($cPend, 2) }}</span>

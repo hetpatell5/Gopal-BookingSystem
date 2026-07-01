@@ -10,10 +10,19 @@
         <div>
             <p class="text-[13px] text-gray-500 mt-0.5">Create custom forms and collect responses.</p>
         </div>
-        <a href="{{ route('forms.create') }}"
-           class="inline-flex items-center gap-2 bg-[#f0b44b] text-[#1c2238] font-bold text-[13px] px-5 py-2.5 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm">
-            <i class="fa-solid fa-plus"></i> Create New Form
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('forms.contract') }}" target="_blank"
+               class="inline-flex items-center gap-2 text-white font-bold text-[13px] px-5 py-2.5 rounded-none shadow-sm transition-colors"
+               style="background-color: #c0001a;"
+               onmouseover="this.style.backgroundColor='#a00016'"
+               onmouseout="this.style.backgroundColor='#c0001a'">
+                <i class="fa-solid fa-file-contract"></i> Contract Form
+            </a>
+            <a href="{{ route('forms.create') }}"
+               class="inline-flex items-center gap-2 bg-[#f0b44b] text-[#1c2238] font-bold text-[13px] px-5 py-2.5 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm">
+                <i class="fa-solid fa-plus"></i> Create New Form
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
