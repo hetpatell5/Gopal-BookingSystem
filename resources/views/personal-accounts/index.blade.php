@@ -51,13 +51,13 @@
 
                     {{-- Grease Cost --}}
                     <tr class="border-b border-gray-100 expense-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-oil-can text-[#f0b44b] mr-2"></i> Grease Cost
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Grease Cost
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" min="0" step="0.01"
@@ -69,13 +69,13 @@
 
                     {{-- Tax --}}
                     <tr class="border-b border-gray-100 expense-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-receipt text-[#f0b44b] mr-2"></i> Tax
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Tax
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" min="0" step="0.01"
@@ -87,13 +87,13 @@
 
                     {{-- Toll Tax --}}
                     <tr class="border-b border-gray-100 expense-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-road text-[#f0b44b] mr-2"></i> Toll Tax
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Toll Tax
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" min="0" step="0.01"
@@ -105,11 +105,11 @@
 
                     {{-- Diesel --}}
                     <tr class="border-b border-gray-100 expense-row" id="diesel-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-gas-pump text-[#f0b44b] mr-2"></i> Diesel
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Diesel
                             <span class="text-[11px] font-normal text-gray-400 ml-1">(live rate: <span id="diesel-rate-display">—</span>/ltr)</span>
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <input type="number" id="diesel-litres" min="0" step="0.01"
                                        class="detail-input w-20 text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5"
@@ -117,7 +117,7 @@
                                 <span class="text-gray-400 text-[12px]">ltr</span>
                             </div>
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" id="diesel-amount" min="0" step="0.01"
@@ -129,13 +129,13 @@
 
                     {{-- Driver Salary --}}
                     <tr class="border-b border-gray-100 expense-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-user-tie text-[#f0b44b] mr-2"></i> Driver Salary
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Driver Salary
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" min="0" step="0.01"
@@ -147,13 +147,49 @@
 
                     {{-- Conductor Salary --}}
                     <tr class="border-b border-gray-100 expense-row">
-                        <td class="py-4 font-semibold text-[#1c2238]">
-                            <i class="fa-solid fa-user text-[#f0b44b] mr-2"></i> Conductor Salary
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Conductor Salary
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
                             <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
                         </td>
-                        <td class="py-4 text-right">
+                        <td class="py-2.5 text-right">
+                            <div class="flex items-center justify-end gap-1">
+                                <span class="text-gray-400 text-[12px]">₹</span>
+                                <input type="number" min="0" step="0.01"
+                                       class="amount-input w-28 text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent font-semibold text-[#1c2238] px-1 py-0.5"
+                                       placeholder="0.00">
+                            </div>
+                        </td>
+                    </tr>
+
+                    {{-- Parking --}}
+                    <tr class="border-b border-gray-100 expense-row">
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Parking
+                        </td>
+                        <td class="py-2.5 text-right">
+                            <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
+                        </td>
+                        <td class="py-2.5 text-right">
+                            <div class="flex items-center justify-end gap-1">
+                                <span class="text-gray-400 text-[12px]">₹</span>
+                                <input type="number" min="0" step="0.01"
+                                       class="amount-input w-28 text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent font-semibold text-[#1c2238] px-1 py-0.5"
+                                       placeholder="0.00">
+                            </div>
+                        </td>
+                    </tr>
+
+                    {{-- Parchuran (Miscellaneous) --}}
+                    <tr class="border-b border-gray-100 expense-row">
+                        <td class="py-2.5 font-semibold text-[#1c2238]">
+                            Parchuran
+                        </td>
+                        <td class="py-2.5 text-right">
+                            <input type="text" class="detail-input w-full text-right border-b border-gray-300 focus:border-[#f0b44b] outline-none bg-transparent text-gray-600 text-[13px] px-1 py-0.5" placeholder="—">
+                        </td>
+                        <td class="py-2.5 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <span class="text-gray-400 text-[12px]">₹</span>
                                 <input type="number" min="0" step="0.01"
