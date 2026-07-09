@@ -33,16 +33,10 @@
                 <input type="text" name="name" value="{{ old('name', $bus->name) }}" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" required>
             </div>
 
-            <!-- Plate Number + Total Seats -->
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Plate Number</label>
-                    <input type="text" name="plate_number" value="{{ old('plate_number', $bus->plate_number) }}" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" required>
-                </div>
-                <div>
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Total Seats</label>
-                    <input type="number" name="total_seats" value="{{ old('total_seats', $bus->total_seats ?? 40) }}" min="1" max="60" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" required>
-                </div>
+            <!-- Total Seats -->
+            <div class="mb-4">
+                <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Total Seats</label>
+                <input type="number" name="total_seats" value="{{ old('total_seats', $bus->total_seats ?? 40) }}" min="1" max="60" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" required>
             </div>
 
             <!-- Bus Type + AC / Non AC -->

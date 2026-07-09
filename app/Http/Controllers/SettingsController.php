@@ -27,15 +27,21 @@ class SettingsController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'site_logo' => 'nullable|image|max:2048',
             'site_favicon' => 'nullable|file|mimes:ico,png,jpg,jpeg|max:1024',
-            'whatsapp_number' => 'nullable|string|max:20',
+            'login_image' => 'nullable|image|max:5120',
+            'whatsapp_access_token' => 'nullable|string|max:1000',
+            'whatsapp_phone_number_id' => 'nullable|string|max:255',
+            'whatsapp_business_account_id' => 'nullable|string|max:255',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->whatsapp_number = $request->whatsapp_number;
+        $user->whatsapp_access_token = $request->whatsapp_access_token;
+        $user->whatsapp_phone_number_id = $request->whatsapp_phone_number_id;
+        $user->whatsapp_business_account_id = $request->whatsapp_business_account_id;
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
+            $user->raw_password = $request->password;
         }
 
         if ($request->hasFile('avatar')) {
@@ -54,6 +60,10 @@ class SettingsController extends Controller
 
         if ($request->hasFile('site_favicon')) {
             $request->file('site_favicon')->move(public_path(), 'favicon.ico');
+        }
+
+        if ($request->hasFile('login_image')) {
+            $request->file('login_image')->move(public_path('images'), 'login-image.png');
         }
 
         $user->save();

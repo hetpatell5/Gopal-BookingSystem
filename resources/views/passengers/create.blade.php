@@ -111,7 +111,7 @@
 
         <!-- Bus Type Filter -->
         <div class="flex-1">
-            <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Bus Type</label>
+            <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-2">Bus Type</label>
             <select name="bus_type_filter" onchange="document.getElementById('busSelectForm').submit()"
                     class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
                 <option value="">-- All Types --</option>
@@ -122,13 +122,13 @@
 
         <!-- Bus Dropdown (filtered by type if selected) -->
         <div class="flex-1">
-            <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Select Bus</label>
+            <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-2">Select Bus</label>
             <select name="bus_id" onchange="document.getElementById('busSelectForm').submit()"
                     class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
                 <option value="">-- Choose a Bus --</option>
                 @foreach($buses->when($busTypeFilter, fn($q) => $q->where('bus_type', $busTypeFilter)) as $bus)
                     <option value="{{ $bus->id }}" {{ $selectedBusId == $bus->id ? 'selected' : '' }}>
-                        {{ $bus->name }} ({{ $bus->plate_number }})
+                        {{ $bus->name }}
                     </option>
                 @endforeach
             </select>
@@ -136,7 +136,7 @@
 
         <!-- Journey Date -->
         <div class="flex-1">
-            <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Journey Date</label>
+            <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-2">Journey Date</label>
             <div class="flex gap-2">
                 <input type="date" name="date" value="{{ $selectedDate }}"
                        class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
@@ -305,10 +305,25 @@
             <input type="hidden" name="journey_date" value="{{ $selectedDate }}">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- From Place -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">From Place</label>
+                    <input type="text" name="from_place" value="{{ old('from_place') }}"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           placeholder="Enter source" {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
+
+                <!-- To Place -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">To Place</label>
+                    <input type="text" name="to_place" value="{{ old('to_place') }}"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           placeholder="Enter destination" {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
 
                 <!-- Seat Number -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Seat Number(s) *</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Seat Number(s) *</label>
                     <input type="text" id="seat_number" name="seat_number" value="{{ old('seat_number') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="{{ $selectedBusId ? 'Select from layout' : 'Select a bus first' }}"
@@ -317,7 +332,7 @@
 
                 <!-- Passenger Name -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Passenger Name *</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Passenger Name *</label>
                     <input type="text" name="passenger_name" value="{{ old('passenger_name') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="Enter name" required {{ !$selectedBusId ? 'disabled' : '' }}>
@@ -325,23 +340,16 @@
 
                 <!-- Mobile Number -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Mobile Number</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Mobile Number</label>
                     <input type="text" name="passenger_mobile" value="{{ old('passenger_mobile') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="Enter mobile" {{ !$selectedBusId ? 'disabled' : '' }}>
                 </div>
 
-                <!-- Village Name -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Village Name</label>
-                    <input type="text" name="village_name" value="{{ old('village_name') }}"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
-                           placeholder="Enter village" {{ !$selectedBusId ? 'disabled' : '' }}>
-                </div>
 
                 <!-- Traveler Name (from bus name) -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Traveler Name</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Traveler Name</label>
                     <input type="text" name="traveler_name" value="{{ old('traveler_name', $selectedBus?->name ?? '') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="Enter traveler name" {{ !$selectedBusId ? 'disabled' : '' }}>
@@ -349,7 +357,7 @@
 
                 <!-- Traveler Plate # (from bus plate) -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Traveler Plate #</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Traveler Plate #</label>
                     <input type="text" name="traveler_number_plate" value="{{ old('traveler_number_plate', $selectedBus?->plate_number ?? '') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="Enter plate number" {{ !$selectedBusId ? 'disabled' : '' }}>
@@ -357,7 +365,7 @@
 
                 <!-- AC / Non AC -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">AC/Non AC *</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">AC/Non AC *</label>
                     <select name="ac_type" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                             required {{ !$selectedBusId ? 'disabled' : '' }}>
                         <option value="Non Ac" {{ old('ac_type') == 'Non Ac' ? 'selected' : '' }}>Non Ac</option>
@@ -367,39 +375,15 @@
 
                 <!-- Bus Time -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Bus Time</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Bus Time</label>
                     <input type="time" name="bus_time" value="{{ old('bus_time') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            {{ !$selectedBusId ? 'disabled' : '' }}>
                 </div>
 
-                <!-- Total Amount -->
+                 <!-- Pickup Stop -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Total Amount *</label>
-                    <input type="number" step="0.01" name="total_amount" id="total_amount"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
-                           value="{{ old('total_amount', 0) }}" required {{ !$selectedBusId ? 'disabled' : '' }}>
-                </div>
-
-                <!-- Advance Payment -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Advance Payment *</label>
-                    <input type="number" step="0.01" name="payable_amount" id="payable_amount"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
-                           value="{{ old('payable_amount', 0) }}" required {{ !$selectedBusId ? 'disabled' : '' }}>
-                </div>
-
-                <!-- Baki Payment -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Baki Payment</label>
-                    <input type="number" step="0.01" id="baki_payment"
-                           class="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-[14px] text-gray-500 rounded-none focus:outline-none"
-                           value="0" readonly>
-                </div>
-
-                <!-- Pickup Stop -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Pickup Stop</label>
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Pickup Stop</label>
                     <input type="text" name="pickup_stop" value="{{ old('pickup_stop') }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            placeholder="Enter pickup location" {{ !$selectedBusId ? 'disabled' : '' }}>
@@ -407,16 +391,56 @@
 
                 <!-- Total Seats -->
                 <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Total Seats</label>
-                    <input type="number" name="total_seats" value="{{ old('total_seats', 1) }}"
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Total Seats</label>
+                    <input type="number" name="total_seats" id="total_seats" value="{{ old('total_seats', 1) }}"
                            class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                            {{ !$selectedBusId ? 'disabled' : '' }}>
                 </div>
 
+                <!-- Per Seat Price -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Per Seat Price</label>
+                    <input type="number" step="0.01" name="per_seat_price" id="per_seat_price"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           value="{{ old('per_seat_price') }}" placeholder="Auto calculates total" {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
+
+                <!-- Extra Passenger Amount -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Extra Passenger Amount</label>
+                    <input type="number" step="0.01" name="extra_passenger_amount" id="extra_passenger_amount"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           value="{{ old('extra_passenger_amount', 0) }}" {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
+
+                <!-- Total Amount -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Total Amount *</label>
+                    <input type="number" step="0.01" name="total_amount" id="total_amount"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           value="{{ old('total_amount', 0) }}" required {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
+
+                <!-- Advance Payment -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Advance Payment *</label>
+                    <input type="number" step="0.01" name="payable_amount" id="payable_amount"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
+                           value="{{ old('payable_amount', 0) }}" required {{ !$selectedBusId ? 'disabled' : '' }}>
+                </div>
+
+                <!-- Baki Payment -->
+                <div class="mb-2">
+                    <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Baki Payment</label>
+                    <input type="number" step="0.01" id="baki_payment"
+                           class="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-[14px] text-gray-500 rounded-none focus:outline-none"
+                           value="0" readonly>
+                </div>
+
                 @if($selectedBus && $selectedBus->bus_type === 'Commission')
-                    <!-- Commission (%) -->
+                    <!-- Commission Percentage -->
                     <div class="mb-2">
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission (%)</label>
+                        <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Commission Percentage (%)</label>
                         <input type="number" step="0.01" name="commission_percentage" id="commission_percentage"
                                class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                                value="{{ old('commission_percentage', 0) }}">
@@ -424,7 +448,7 @@
 
                     <!-- Commission Amount -->
                     <div class="mb-2">
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission Amount</label>
+                        <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Commission Amount</label>
                         <input type="number" step="0.01" name="commission_amount" id="commission_amount"
                                class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-gray-50 text-[14px]"
                                value="{{ old('commission_amount', 0) }}" readonly>
@@ -435,14 +459,14 @@
 
             <!-- Note -->
             <div class="mb-6 mt-2">
-                <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Note</label>
+                <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Note</label>
                 <textarea name="note" rows="2"
                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
                           placeholder="Additional remarks" {{ !$selectedBusId ? 'disabled' : '' }}>{{ old('note') }}</textarea>
             </div>
 
             <button type="submit" id="submitBtn"
-                    class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-3 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full bg-[#f0b44b] text-[#1c2238] font-black uppercase tracking-wide py-3 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     {{ !$selectedBusId ? 'disabled' : '' }}>
                 {{ $selectedBusId ? 'Select a Seat to Book' : 'Please Select a Bus' }}
             </button>
@@ -463,21 +487,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const payableAmountInput = document.getElementById('payable_amount');
     const bakiPaymentInput  = document.getElementById('baki_payment');
 
+    const perSeatPriceInput = document.getElementById('per_seat_price');
+    const extraAmountInput  = document.getElementById('extra_passenger_amount');
+
     if (totalAmountInput) {
-        const calculateAmounts = () => {
+        const calculateAmounts = (source = null) => {
+            const extra = extraAmountInput ? (parseFloat(extraAmountInput.value) || 0) : 0;
+            let baseTotal = 0;
+
+            if (perSeatPriceInput && totalSeatsInput && (source === 'per_seat' || source === 'extra' || source === 'seats')) {
+                const seats = parseFloat(totalSeatsInput.value) || 0;
+                const price = parseFloat(perSeatPriceInput.value) || 0;
+                baseTotal = seats * price;
+                totalAmountInput.value = (baseTotal + extra).toFixed(2);
+            } else {
+                const total = parseFloat(totalAmountInput.value) || 0;
+                baseTotal = Math.max(0, total - extra);
+            }
+
             const total = parseFloat(totalAmountInput.value) || 0;
+            
             if (commPercentInput && commAmountInput) {
-                const percent = parseFloat(commPercentInput.value) || 0;
-                commAmountInput.value = ((total * percent) / 100).toFixed(2);
+                const percentage = parseFloat(commPercentInput.value) || 0;
+                commAmountInput.value = (baseTotal * (percentage / 100)).toFixed(2);
             }
             if (payableAmountInput && bakiPaymentInput) {
                 const advance = parseFloat(payableAmountInput.value) || 0;
                 bakiPaymentInput.value = (total - advance).toFixed(2);
             }
         };
-        totalAmountInput.addEventListener('input', calculateAmounts);
-        if (commPercentInput)   commPercentInput.addEventListener('input', calculateAmounts);
-        if (payableAmountInput) payableAmountInput.addEventListener('input', calculateAmounts);
+        
+        totalAmountInput.addEventListener('input', () => calculateAmounts('total'));
+        if (commPercentInput)   commPercentInput.addEventListener('input', () => calculateAmounts('comm'));
+        if (payableAmountInput) payableAmountInput.addEventListener('input', () => calculateAmounts('pay'));
+        if (perSeatPriceInput)  perSeatPriceInput.addEventListener('input', () => calculateAmounts('per_seat'));
+        if (extraAmountInput)   extraAmountInput.addEventListener('input', () => calculateAmounts('extra'));
+        if (totalSeatsInput)    totalSeatsInput.addEventListener('input', () => {
+            calculateAmounts('seats');
+        });
     }
 
     let selectedSeats = [];
@@ -501,7 +548,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (seatInput)       seatInput.value = selectedSeats.join(', ');
-                if (totalSeatsInput) totalSeatsInput.value = selectedSeats.length || 1;
+                if (totalSeatsInput) {
+                    totalSeatsInput.value = selectedSeats.length || 1;
+                    if (document.getElementById('per_seat_price') && document.getElementById('per_seat_price').value) {
+                        const price = parseFloat(document.getElementById('per_seat_price').value) || 0;
+                        const extra = extraAmountInput ? (parseFloat(extraAmountInput.value) || 0) : 0;
+                        if (totalAmountInput) {
+                            totalAmountInput.value = (((selectedSeats.length || 1) * price) + extra).toFixed(2);
+                            // Trigger input event to calculate commission/baki
+                            totalAmountInput.dispatchEvent(new Event('input'));
+                        }
+                    }
+                }
 
                 if (submitBtn) {
                     if (selectedSeats.length > 0) {

@@ -44,7 +44,7 @@
                 <div class="flex items-center gap-6 mb-8 bg-gray-50 p-4 border border-gray-100">
                     <div class="relative shrink-0 overflow-hidden shadow-sm border-2 border-white bg-white" style="width: 80px; height: 80px; min-width: 80px; max-width: 80px;">
                         @if(auth()->user()->avatar)
-                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="User Avatar" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="User Avatar" class="w-full h-full object-cover">
                         @else
                             <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=f0b44b&color=1c2238&bold=true&rounded=false" alt="User Avatar" class="w-full h-full object-cover">
                         @endif
@@ -128,6 +128,50 @@
             </div>
         </div>
 
+        <!-- WhatsApp API Card -->
+        <div class="bg-white rounded-none shadow-sm mb-6">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#25d366]/10 flex items-center justify-center text-[#25d366]">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#1c2238]">WhatsApp API Configuration (Meta)</h2>
+            </div>
+            <div class="p-6">
+                <p class="text-[12px] text-gray-500 mb-6">Configure your Meta Developer credentials to enable automatic WhatsApp message broadcasting.</p>
+                <div class="grid grid-cols-1 gap-6 mb-4">
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-2">Access Token</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-key text-gray-400 text-[13px]"></i>
+                            </div>
+                            <input type="text" name="whatsapp_access_token" value="{{ old('whatsapp_access_token', $user->whatsapp_access_token) }}" class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] bg-white transition-colors" placeholder="EAAD...">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-2">Phone Number ID</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-hashtag text-gray-400 text-[13px]"></i>
+                            </div>
+                            <input type="text" name="whatsapp_phone_number_id" value="{{ old('whatsapp_phone_number_id', $user->whatsapp_phone_number_id) }}" class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] bg-white transition-colors" placeholder="1234567890">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[12px] font-bold text-gray-500 uppercase tracking-widest mb-2">Business Account ID</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-solid fa-briefcase text-gray-400 text-[13px]"></i>
+                            </div>
+                            <input type="text" name="whatsapp_business_account_id" value="{{ old('whatsapp_business_account_id', $user->whatsapp_business_account_id) }}" class="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] bg-white transition-colors" placeholder="0987654321">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Site Appearance Card -->
         <div class="bg-white rounded-none shadow-sm mb-8">
             <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
@@ -137,7 +181,7 @@
                 <h2 class="text-[16px] font-bold text-[#1c2238]">Site Appearance</h2>
             </div>
             <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
                     <!-- Site Logo -->
                     <div class="group border border-gray-200 relative p-1">
@@ -176,6 +220,28 @@
                             <label class="cursor-pointer px-4 py-1.5 bg-white border border-gray-300 text-gray-600 text-[11px] font-bold rounded-none shadow-sm hover:border-[#f0b44b] hover:text-[#f0b44b] transition-colors">
                                 Browse File
                                 <input type="file" name="site_favicon" accept=".ico,.png,.jpg,.jpeg" class="hidden file-input">
+                            </label>
+                            <span class="file-name text-[10px] text-[#f0b44b] font-bold mt-2 hidden truncate max-w-full px-2"></span>
+                        </div>
+                    </div>
+
+                    <!-- Login Image -->
+                    <div class="group border border-gray-200 relative p-1">
+                        <div class="bg-gray-50 p-5 h-full flex flex-col items-center text-center justify-center border border-dashed border-gray-300 group-hover:bg-[#fcf8f2] group-hover:border-[#f0b44b] transition-colors relative">
+                            <div class="mb-3">
+                                @if(file_exists(public_path('images/login-image.png')))
+                                    <div class="h-12 w-full mx-auto bg-white border border-gray-200 flex items-center justify-center p-1.5 shadow-sm">
+                                        <img src="{{ asset('images/login-image.png') }}?v={{ time() }}" alt="Login Image" class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <i class="fa-solid fa-image text-3xl text-gray-300 group-hover:text-[#f0b44b]"></i>
+                                @endif
+                            </div>
+                            <h4 class="text-[13px] font-bold text-gray-700">Login Page Image</h4>
+                            <p class="text-[11px] text-gray-500 mt-1 mb-3">Split image for login screen.</p>
+                            <label class="cursor-pointer px-4 py-1.5 bg-white border border-gray-300 text-gray-600 text-[11px] font-bold rounded-none shadow-sm hover:border-[#f0b44b] hover:text-[#f0b44b] transition-colors">
+                                Browse File
+                                <input type="file" name="login_image" accept="image/*" class="hidden file-input">
                             </label>
                             <span class="file-name text-[10px] text-[#f0b44b] font-bold mt-2 hidden truncate max-w-full px-2"></span>
                         </div>

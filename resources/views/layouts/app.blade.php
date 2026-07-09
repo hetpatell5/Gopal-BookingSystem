@@ -14,6 +14,11 @@
         <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
     @endif
 
+    <!-- TomSelect CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -41,6 +46,57 @@
         }
         aside.collapsed-sidebar .user-avatar {
             margin-right: 0 !important;
+        }
+
+        /* TomSelect Override & Custom Styling */
+        .ts-wrapper {
+            padding: 0 !important;
+            border: none !important;
+        }
+        .ts-control {
+            border: 1px solid #e5e7eb !important; /* border-gray-200 */
+            border-radius: 0 !important; /* rounded-none */
+            padding: 0.5rem 1rem !important; /* py-2 px-4 */
+            padding-right: 2.5rem !important;
+            font-size: 14px !important;
+            box-shadow: none !important;
+            background-color: #fff !important;
+            color: #1c2238 !important;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+        }
+        .ts-wrapper.focus .ts-control {
+            border-color: #f0b44b !important;
+            box-shadow: 0 0 0 2px rgba(240, 180, 75, 0.2) !important;
+        }
+        
+        /* Hide TomSelect default arrow */
+        .ts-wrapper.single .ts-control::after {
+            display: none !important;
+        }
+        
+        /* Add FontAwesome Dropdown Icon */
+        .ts-wrapper::before {
+            content: '\f078' !important; /* fa-chevron-down */
+            font-family: 'Font Awesome 6 Free' !important;
+            font-weight: 900 !important;
+            position: absolute !important;
+            right: 14px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            pointer-events: none !important;
+            color: #9ca3af !important;
+            font-size: 14px !important;
+            z-index: 2 !important;
+        }
+        .ts-wrapper.focus::before {
+            color: #f0b44b !important;
+        }
+        .ts-dropdown {
+            border-radius: 0 !important;
+            border-color: #e5e7eb !important;
+            font-size: 14px !important;
         }
     </style>
 </head>
@@ -92,7 +148,7 @@
                 @auth
                 <div class="relative flex items-center gap-3 cursor-pointer group pl-2 border-l border-gray-200">
                     @if(auth()->user()->avatar)
-                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="User Avatar" class="w-9 h-9 rounded-full shadow-sm ring-2 ring-transparent group-hover:ring-[#f0b44b] transition-all object-cover" style="width: 36px; height: 36px; min-width: 36px;">
+                        <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="User Avatar" class="w-9 h-9 rounded-full shadow-sm ring-2 ring-transparent group-hover:ring-[#f0b44b] transition-all object-cover" style="width: 36px; height: 36px; min-width: 36px;">
                     @else
                         <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=f0b44b&color=1c2238&bold=true&rounded=true" alt="User Avatar" class="w-9 h-9 rounded-full shadow-sm ring-2 ring-transparent group-hover:ring-[#f0b44b] transition-all">
                     @endif
@@ -142,6 +198,13 @@
             toggleBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('collapsed-sidebar');
                 localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed-sidebar'));
+            });
+
+            // Initialize TomSelect for all select elements
+            document.querySelectorAll('select').forEach((el) => {
+                new TomSelect(el, {
+                    create: false
+                });
             });
         });
     </script>

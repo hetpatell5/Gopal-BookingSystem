@@ -36,16 +36,10 @@
                     <input type="text" name="name" value="{{ old('name') }}" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="e.g. Gandhinagar Travels" required>
                 </div>
 
-                <!-- Plate Number + Total Seats -->
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Plate Number</label>
-                        <input type="text" name="plate_number" value="{{ old('plate_number') }}" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="GJ-01-CC-2143" required>
-                    </div>
-                    <div>
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Total Seats</label>
-                        <input type="number" name="total_seats" value="{{ old('total_seats', 40) }}" min="1" max="60" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="40" required>
-                    </div>
+                <!-- Total Seats -->
+                <div class="mb-4">
+                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-2">Total Seats</label>
+                    <input type="number" name="total_seats" value="{{ old('total_seats', 40) }}" min="1" max="60" class="w-full px-4 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="40" required>
                 </div>
 
                 <!-- Bus Type + AC / Non AC -->
@@ -104,7 +98,6 @@
                     <thead>
                         <tr>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Bus Name</th>
-                            <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Plate Number</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Type</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Seats</th>
                             <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Layout</th>
@@ -118,7 +111,6 @@
                                 <a href="{{ route('buses.show', $bus->id) }}" class="text-[#f0b44b] hover:underline">{{ $bus->name }}</a>
                                 <div class="text-[11px] text-gray-400 font-medium mt-0.5">{{ $bus->ac_non_ac ?? '-' }}</div>
                             </td>
-                            <td class="px-6 py-4 text-[13px] font-medium text-gray-600">{{ $bus->plate_number }}</td>
                             <td class="px-6 py-4 text-[13px] font-medium text-gray-600">
                                 @if(($bus->bus_type ?? 'Personal') == 'Personal')
                                     <span class="px-2 py-1 text-[11px] font-bold bg-blue-50 text-blue-600 rounded-sm">Personal</span>

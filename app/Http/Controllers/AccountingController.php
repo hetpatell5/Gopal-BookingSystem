@@ -29,7 +29,7 @@ class AccountingController extends Controller
         // payable_amount  = advance collected upfront
         // commission_amount = commission deducted (commission buses only)
         // pending_amount  = total_amount - payable_amount (still owed by passenger)
-        // net_revenue     = total_amount - commission_amount (what owner keeps)
+        // net_revenue     = payable_amount - commission_amount (agent pays owner from advance collected)
 
         $accountingData = (clone $ledgerQuery)
             ->select(
@@ -38,9 +38,9 @@ class AccountingController extends Controller
                 DB::raw('SUM(total_seats)                                    as total_seats_sold'),
                 DB::raw('SUM(total_amount)                                   as total_revenue'),       // gross billed
                 DB::raw('SUM(payable_amount)                                 as total_advance'),       // advance collected
-                DB::raw('SUM(total_amount - payable_amount)                  as total_pending'),       // still owed
+                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending'),       // still owed
                 DB::raw('SUM(commission_amount)                              as total_commission'),    // commission
-                DB::raw('SUM(total_amount - commission_amount)               as total_net_revenue')   // owner keeps
+                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue')   // owner keeps from agent
             )
             ->groupBy('bus_id')
             ->get()
@@ -54,7 +54,7 @@ class AccountingController extends Controller
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
-                SUM(total_amount - payable_amount)     as pending
+                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending
             ')
             ->first();
 
@@ -66,9 +66,9 @@ class AccountingController extends Controller
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
-                SUM(total_amount - payable_amount)     as pending,
+                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending,
                 SUM(commission_amount)                 as commission,
-                SUM(total_amount - commission_amount)  as net_revenue
+                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END)  as net_revenue
             ')
             ->first();
 
@@ -90,5 +90,66 @@ class AccountingController extends Controller
         return view('accounting.index', compact(
             'buses', 'accountingData', 'personalData', 'commissionData'
         ));
+    }
+
+    public function show(Request $request, Bus $bus)
+    {
+        $query = Passenger::where('bus_id', $bus->id)
+            ->when($request->filled('date_from'), fn($q) => $q->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->filled('date_to'),   fn($q) => $q->whereDate('created_at', '<=', $request->date_to));
+
+        $bookings = (clone $query)
+            ->select(
+                'journey_date',
+                DB::raw('COUNT(id) as total_bookings'),
+                DB::raw('SUM(total_seats) as total_seats'),
+                DB::raw('SUM(total_amount) as total_amount'),
+                DB::raw('SUM(payable_amount) as payable_amount'),
+                DB::raw('SUM(commission_amount) as commission_amount'),
+                DB::raw('MIN(is_hisab_completed) as is_hisab_completed')
+            )
+            ->groupBy('journey_date')
+            ->orderBy('journey_date', 'desc')
+            ->get();
+
+        $totals = (clone $query)
+            ->selectRaw('
+                COUNT(id) as total_bookings,
+                SUM(total_seats) as total_seats_sold,
+                SUM(total_amount) as total_revenue,
+                SUM(payable_amount) as total_advance,
+                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending,
+                SUM(commission_amount) as total_commission,
+                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue
+            ')
+            ->first();
+
+        if ($request->action === 'export_pdf') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('accounting.show_pdf', compact('bus', 'bookings', 'totals', 'request'));
+            $pdf->setPaper('a4', 'portrait');
+            
+            $fileName = 'bus_' . str_replace(' ', '_', strtolower($bus->name)) . '_hisab_';
+            if ($request->filled('date_from')) $fileName .= $request->date_from . '_';
+            if ($request->filled('date_to')) $fileName .= $request->date_to;
+            else $fileName .= date('Y_m_d');
+            
+            return $pdf->download($fileName . '.pdf');
+        }
+
+        return view('accounting.show', compact('bus', 'bookings', 'totals'));
+    }
+
+    public function toggleDailyHisab(Request $request, Bus $bus)
+    {
+        $request->validate([
+            'journey_date' => 'required|date',
+            'is_completed' => 'required|boolean'
+        ]);
+
+        Passenger::where('bus_id', $bus->id)
+            ->whereDate('journey_date', $request->journey_date)
+            ->update(['is_hisab_completed' => $request->is_completed]);
+
+        return response()->json(['success' => true]);
     }
 }

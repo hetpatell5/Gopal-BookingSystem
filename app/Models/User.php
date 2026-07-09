@@ -22,6 +22,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'raw_password',
+        'whatsapp_access_token',
+        'whatsapp_phone_number_id',
+        'whatsapp_business_account_id',
     ];
 
     /**

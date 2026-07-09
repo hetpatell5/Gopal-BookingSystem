@@ -11,7 +11,7 @@ class PassengerController extends Controller
 {
     public function create(Request $request)
     {
-        $buses = Bus::all();
+        $buses = Bus::orderBy('name', 'asc')->get();
         $selectedBusId   = $request->input('bus_id');
         $selectedDate    = $request->input('date', now()->format('Y-m-d'));
         $busTypeFilter   = $request->input('bus_type_filter', '');
@@ -49,7 +49,7 @@ class PassengerController extends Controller
 
     public function index(Request $request)
     {
-        $buses = Bus::all();
+        $buses = Bus::orderBy('name', 'asc')->get();
         $query = Passenger::with('bus');
 
         // Filter by Bus
@@ -78,10 +78,7 @@ class PassengerController extends Controller
             $query->where('ac_type', $request->ac_type);
         }
 
-        // Filter by Village Name
-        if ($request->filled('village_name')) {
-            $query->where('village_name', 'like', '%' . $request->village_name . '%');
-        }
+
 
         // Filter by Traveler Name
         if ($request->filled('traveler_name')) {
@@ -115,7 +112,7 @@ class PassengerController extends Controller
             'bus_id' => 'required|exists:buses,id',
             'seat_number' => 'required|string',
             'passenger_name' => 'required|string',
-            'village_name' => 'nullable|string',
+
             'passenger_mobile' => 'nullable|string',
             'traveler_name' => 'nullable|string',
             'traveler_number_plate' => 'nullable|string',
@@ -123,15 +120,22 @@ class PassengerController extends Controller
             'journey_date' => 'required|date',
             'bus_time' => 'nullable|string',
             'total_seats' => 'nullable|integer',
+            'per_seat_price' => 'nullable|numeric',
+            'extra_passenger_amount' => 'nullable|numeric',
             'total_amount' => 'required|numeric',
             'payable_amount' => 'required|numeric',
             'pickup_stop' => 'nullable|string',
+            'from_place' => 'nullable|string',
+            'to_place' => 'nullable|string',
             'note' => 'nullable|string',
             'commission_percentage' => 'nullable|numeric',
             'commission_amount' => 'nullable|numeric',
         ]);
 
-        $passenger = Passenger::create($request->all());
+        $data = $request->all();
+        $data['extra_passenger_amount'] = $data['extra_passenger_amount'] ?? 0;
+
+        $passenger = Passenger::create($data);
 
         // Prepare WhatsApp message if mobile number is provided
         if (!empty($passenger->passenger_mobile)) {
@@ -169,8 +173,34 @@ class PassengerController extends Controller
 
     public function edit(Passenger $passenger)
     {
-        $buses = Bus::all();
-        return view('passengers.edit', compact('passenger', 'buses'));
+        $buses = Bus::orderBy('name', 'asc')->get();
+        $selectedBus = $passenger->bus;
+        
+        $totalSeats = $selectedBus->total_seats ?? 40;
+        $seatLayout = $selectedBus->seat_layout ?? '2x2';
+        
+        $bookedSeats = [];
+        if ($selectedBus) {
+            $otherPassengers = $selectedBus->passengers()
+                ->whereDate('journey_date', $passenger->journey_date)
+                ->where('id', '!=', $passenger->id)
+                ->get();
+                
+            foreach ($otherPassengers as $p) {
+                $seats = array_map('trim', explode(',', $p->seat_number));
+                foreach ($seats as $seat) {
+                    if (!empty($seat)) {
+                        $bookedSeats[] = $seat;
+                    }
+                }
+            }
+        }
+        
+        $currentSeats = array_map('trim', explode(',', $passenger->seat_number));
+
+        return view('passengers.edit', compact(
+            'passenger', 'buses', 'selectedBus', 'totalSeats', 'seatLayout', 'bookedSeats', 'currentSeats'
+        ));
     }
 
     public function update(Request $request, Passenger $passenger)
@@ -179,7 +209,7 @@ class PassengerController extends Controller
             'bus_id' => 'required|exists:buses,id',
             'seat_number' => 'required|string',
             'passenger_name' => 'required|string',
-            'village_name' => 'nullable|string',
+
             'passenger_mobile' => 'nullable|string',
             'traveler_name' => 'nullable|string',
             'traveler_number_plate' => 'nullable|string',
@@ -187,15 +217,22 @@ class PassengerController extends Controller
             'journey_date' => 'required|date',
             'bus_time' => 'nullable|string',
             'total_seats' => 'nullable|integer',
+            'per_seat_price' => 'nullable|numeric',
+            'extra_passenger_amount' => 'nullable|numeric',
             'total_amount' => 'required|numeric',
             'payable_amount' => 'required|numeric',
             'pickup_stop' => 'nullable|string',
+            'from_place' => 'nullable|string',
+            'to_place' => 'nullable|string',
             'note' => 'nullable|string',
             'commission_percentage' => 'nullable|numeric',
             'commission_amount' => 'nullable|numeric',
         ]);
 
-        $passenger->update($request->all());
+        $data = $request->all();
+        $data['extra_passenger_amount'] = $data['extra_passenger_amount'] ?? 0;
+
+        $passenger->update($data);
 
         return redirect()->route('passengers.index')->with('success', 'Booking updated successfully.');
     }
@@ -203,7 +240,7 @@ class PassengerController extends Controller
     public function destroy(Passenger $passenger)
     {
         $passenger->delete();
-        return back()->with('success', 'Passenger booking cancelled/removed successfully.');
+        return redirect()->route('passengers.index')->with('success', 'Passenger booking cancelled/removed successfully.');
     }
 
     public function bulkDestroy(Request $request)
@@ -215,7 +252,23 @@ class PassengerController extends Controller
 
         Passenger::whereIn('id', $request->passenger_ids)->delete();
 
-        return back()->with('success', count($request->passenger_ids) . ' passenger(s) removed successfully.');
+        return redirect()->route('passengers.index')->with('success', count($request->passenger_ids) . ' passenger(s) removed successfully.');
+    }
+
+    public function toggleHisab(Request $request, Passenger $passenger)
+    {
+        $request->validate([
+            'is_completed' => 'required|boolean'
+        ]);
+
+        $passenger->update([
+            'is_hisab_completed' => $request->is_completed
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_hisab_completed' => $passenger->is_hisab_completed
+        ]);
     }
 
     public function printRegister(Request $request)

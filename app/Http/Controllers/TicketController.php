@@ -38,4 +38,14 @@ class TicketController extends Controller
     {
         return view('tickets.show', compact('ticket'));
     }
+
+    public function downloadPdf(Passenger $ticket)
+    {
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('tickets.pdf', compact('ticket'))->setOptions(['isRemoteEnabled' => true]);
+        // 28cm x 7cm in points: 28cm = 793.688pt, 7cm = 198.422pt
+        $customPaper = array(0, 0, 793.688, 198.422);
+        $pdf->setPaper($customPaper, 'landscape');
+        
+        return $pdf->download('Ticket-' . $ticket->passenger_name . '.pdf');
+    }
 }

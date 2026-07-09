@@ -113,7 +113,7 @@
 <!-- Bus Dashboard Stats -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
     <!-- Seats -->
-    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-blue-500 relative overflow-hidden group hover:shadow-md transition-shadow">
+    <div class="bg-white rounded-none p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <i class="fa-solid fa-chair text-blue-500" style="font-size: 60px;"></i>
         </div>
@@ -122,7 +122,7 @@
     </div>
 
     <!-- Revenue -->
-    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-green-500 relative overflow-hidden group hover:shadow-md transition-shadow">
+    <div class="bg-white rounded-none p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <i class="fa-solid fa-indian-rupee-sign text-green-500" style="font-size: 60px;"></i>
         </div>
@@ -131,7 +131,7 @@
     </div>
 
     <!-- Commission -->
-    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-[#f0b44b] relative overflow-hidden group hover:shadow-md transition-shadow">
+    <div class="bg-white rounded-none p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <i class="fa-solid fa-hand-holding-dollar text-[#f0b44b]" style="font-size: 60px;"></i>
         </div>
@@ -140,7 +140,7 @@
     </div>
 
     <!-- Payable -->
-    <div class="bg-white rounded-none p-6 shadow-sm border-l-4 border-l-[#1c2238] relative overflow-hidden group hover:shadow-md transition-shadow">
+    <div class="bg-white rounded-none p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
         <div class="absolute right-0 top-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <i class="fa-solid fa-wallet text-[#1c2238]" style="font-size: 60px;"></i>
         </div>
@@ -149,309 +149,7 @@
     </div>
 </div>
 
-<div style="display: flex; flex-wrap: wrap; gap: 2rem;">
-    
-    <!-- Seat Layout (Bus Map) - Dynamic Lower + Upper Deck -->
-    <div style="flex: 1 1 45%; min-width: 300px;" class="bg-white rounded-none shadow-sm p-6 relative">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-            <h2 class="text-[17px] font-bold text-[#1c2238]">
-                Seat Layout
-                <span class="ml-2 px-2 py-0.5 text-[11px] font-bold bg-gray-100 text-gray-500 rounded-sm">{{ $seatLayout }}</span>
-                <span class="ml-1 px-2 py-0.5 text-[11px] font-bold bg-blue-50 text-blue-600 rounded-sm">{{ $totalSeats }} seats</span>
-            </h2>
-            <form method="GET" action="{{ route('buses.show', $bus->id) }}" class="flex items-center gap-2">
-                <label class="text-[12px] font-bold text-gray-500 uppercase tracking-widest">Date:</label>
-                <input type="date" name="date" value="{{ $selectedDate }}" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] font-bold text-[#1c2238] bg-gray-50">
-            </form>
-        </div>
-        
-        <div class="flex justify-between items-center mb-6 text-sm px-4">
-            <div class="flex items-center"><span class="w-4 h-4 bg-white border-2 border-[#22c55e] rounded-none mr-2"></span> Available</div>
-            <div class="flex items-center"><span class="w-4 h-4 bg-[#f0b44b] border-2 border-[#f0b44b] rounded-none mr-2"></span> Selected</div>
-            <div class="flex items-center"><span class="w-4 h-4 bg-[#e5e7eb] border-2 border-[#e5e7eb] rounded-none mr-2"></span> Sold</div>
-        </div>
 
-        @php
-            $lowerCount = (int) ceil($totalSeats / 2);
-            $upperCount = (int) floor($totalSeats / 2);
-
-            // Render a single seat button (label = e.g. 'L5' or 'U12')
-            $renderBerth = function(string $label, array $bookedSeats, array $passengerData) {
-                $isBooked      = in_array($label, $bookedSeats);
-                $passengerId   = $isBooked ? $passengerData[$label]->id            : null;
-                $passengerName = $isBooked ? $passengerData[$label]->passenger_name : '';
-                $pseudoSeats   = $isBooked ? $passengerData[$label]->seat_number    : '';
-                $cls           = $isBooked ? 'berth-booked' : 'berth-available';
-                $html  = '<div class="berth-wrapper">';
-                $html .= '<button type="button"'
-                    . ' data-seat="'   . e($label)          . '"'
-                    . ' data-booked="' . ($isBooked ? 'true' : 'false') . '"'
-                    . ' data-pid="'    . e($passengerId)    . '"'
-                    . ' data-pname="'  . e($passengerName)  . '"'
-                    . ' data-pseats="' . e($pseudoSeats)    . '"'
-                    . ' class="berth ' . $cls . '">'
-                    . e($label)
-                    . '</button>';
-                if ($isBooked) {
-                    $html .= '<span class="berth-booked-label">Sold</span>';
-                }
-                $html .= '</div>';
-                return $html;
-            };
-
-            // Render the interior row-layout HTML for one deck
-            $renderDeckRows = function(string $prefix, int $count, string $layout, array $bookedSeats, array $passengerData) use ($renderBerth) {
-                $html = '';
-                if ($layout === '1x2') {
-                    $leftCount = (int) floor($count / 3);
-                    $rightRows = (int) ceil(($count - $leftCount) / 2);
-
-                    // Left single col
-                    $html .= '<div class="col-layout">';
-                    for ($i = 1; $i <= $leftCount; $i++) {
-                        $html .= $renderBerth($prefix . $i, $bookedSeats, $passengerData);
-                    }
-                    $html .= '</div>';
-
-                    // Aisle
-                    $html .= '<div style="width:40px;"></div>';
-
-                    // Right double col
-                    $html .= '<div class="double-col"><div class="col-layout">';
-                    for ($row = 0; $row < $rightRows; $row++) {
-                        $inner = $leftCount + ($row * 2) + 1;
-                        $outer = $inner + 1;
-                        $html .= '<div style="display:flex;gap:10px;">';
-                        if ($inner <= $count) $html .= $renderBerth($prefix . $inner, $bookedSeats, $passengerData);
-                        if ($outer <= $count) $html .= $renderBerth($prefix . $outer, $bookedSeats, $passengerData);
-                        $html .= '</div>';
-                    }
-                    $html .= '</div></div>';
-                } else {
-                    // 2x2
-                    $rows = (int) ceil($count / 4);
-
-                    // Left pair
-                    $html .= '<div class="col-layout">';
-                    for ($row = 0; $row < $rows; $row++) {
-                        $s1 = $row * 4 + 1; $s2 = $row * 4 + 2;
-                        $html .= '<div class="double-col">';
-                        if ($s1 <= $count) $html .= $renderBerth($prefix . $s1, $bookedSeats, $passengerData);
-                        if ($s2 <= $count) $html .= $renderBerth($prefix . $s2, $bookedSeats, $passengerData);
-                        $html .= '</div>';
-                    }
-                    $html .= '</div>';
-
-                    // Aisle
-                    $html .= '<div style="width:40px;"></div>';
-
-                    // Right pair
-                    $html .= '<div class="col-layout">';
-                    for ($row = 0; $row < $rows; $row++) {
-                        $s3 = $row * 4 + 3; $s4 = $row * 4 + 4;
-                        $html .= '<div class="double-col">';
-                        if ($s3 <= $count) $html .= $renderBerth($prefix . $s3, $bookedSeats, $passengerData);
-                        if ($s4 <= $count) $html .= $renderBerth($prefix . $s4, $bookedSeats, $passengerData);
-                        $html .= '</div>';
-                    }
-                    $html .= '</div>';
-                }
-                return $html;
-            };
-        @endphp
-
-        <div class="deck-container">
-
-            {{-- ===== LOWER DECK ===== --}}
-            <div class="deck">
-                <div class="deck-title">
-                    Lower deck
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
-                        <circle cx="12" cy="12" r="4" stroke-width="2"/>
-                        <path stroke-width="2" d="M12 2v6m0 8v6m-8-8h6m8 0h-6"/>
-                    </svg>
-                </div>
-                <div class="row-layout">
-                    {!! $renderDeckRows('L', $lowerCount, $seatLayout, $bookedSeats, $passengerData) !!}
-                </div>
-            </div>
-
-            {{-- ===== UPPER DECK ===== --}}
-            <div class="deck">
-                <div class="deck-title">
-                    Upper deck
-                </div>
-                <div class="row-layout">
-                    {!! $renderDeckRows('U', $upperCount, $seatLayout, $bookedSeats, $passengerData) !!}
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Booking Form -->
-    <div style="flex: 1 1 45%; min-width: 300px;" class="bg-white rounded-none shadow-sm p-6 relative">
-        <h2 class="text-[17px] font-bold text-[#1c2238] mb-6">Booking Details</h2>
-        
-        @if(session('success'))
-            <div class="mb-6 rounded-none overflow-hidden border border-[#34a853]/30 shadow-sm">
-                <div class="bg-[#e8f5ed] px-4 py-3 flex items-center gap-2 text-[#34a853] text-sm font-semibold">
-                    <i class="fa-solid fa-circle-check text-lg"></i>
-                    {{ session('success') }}
-                </div>
-                @if(session('whatsapp_link'))
-                    <a href="{{ session('whatsapp_link') }}" target="_blank"
-                       style="display:block; background-color:#25D366; color:#ffffff; text-decoration:none; padding:10px 16px; font-size:13px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">
-                        <span style="display:flex; align-items:center; gap:8px;">
-                            <i class="fa-brands fa-whatsapp" style="font-size:18px;"></i>
-                            Send Ticket on WhatsApp
-                        </span>
-                    </a>
-                @endif
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="mb-4 p-3 bg-[#fee2e2] text-[#ef4444] rounded-none text-sm font-semibold">
-                <ul class="list-disc pl-5">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form id="bookingForm" action="{{ route('passengers.store') }}" method="POST">
-            @csrf
-            <input type="hidden" name="bus_id" value="{{ $bus->id }}">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Seat Number -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Seat Number *</label>
-                    <input type="text" id="seat_number" name="seat_number" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-gray-50 text-[14px]" placeholder="Select from layout" readonly required>
-                </div>
-
-                <!-- Passenger Name -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Passenger Name *</label>
-                    <input type="text" name="passenger_name" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter name" required>
-                </div>
-
-                <!-- Passenger Mobile -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Mobile Number</label>
-                    <input type="text" name="passenger_mobile" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter mobile">
-                </div>
-
-                <!-- Village Name -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Village Name</label>
-                    <input type="text" name="village_name" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter village">
-                </div>
-
-                <!-- Traveler Name (auto-filled from bus name, editable) -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">
-                        Traveler Name
-                    </label>
-                    <input type="text" name="traveler_name" id="traveler_name"
-                           value="{{ $bus->name }}"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
-                           placeholder="Enter traveler name">
-                </div>
-
-                <!-- Traveler Plate # (auto-filled from bus plate number, editable) -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">
-                        Traveler Plate #
-                    </label>
-                    <input type="text" name="traveler_number_plate" id="traveler_number_plate"
-                           value="{{ $bus->plate_number }}"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]"
-                           placeholder="Enter plate number">
-                </div>
-
-                <!-- AC / Non AC -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">AC/Non AC *</label>
-                    <select name="ac_type" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" required>
-                        <option value="Non Ac">Non Ac</option>
-                        <option value="Ac">Ac</option>
-                    </select>
-                </div>
-
-                <!-- Journey Date -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Journey Date *</label>
-                    <input type="date" name="journey_date" value="{{ $selectedDate }}" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px] bg-gray-100 cursor-not-allowed" required readonly>
-                    <p class="text-[10px] text-gray-400 mt-1">Change date using the filter on the seat layout map.</p>
-                </div>
-
-                <!-- Bus Time -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Bus Time</label>
-                    <input type="time" name="bus_time" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]">
-                </div>
-
-                <!-- Total Amount -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Total Amount *</label>
-                    <input type="number" step="0.01" name="total_amount" id="total_amount" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="0" required>
-                </div>
-
-                <!-- Advance Payment -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Advance Payment *</label>
-                    <input type="number" step="0.01" name="payable_amount" id="payable_amount" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="0" required>
-                </div>
-
-                <!-- Baki Payment -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Baki Payment</label>
-                    <input type="number" step="0.01" id="baki_payment" class="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-[14px] text-gray-500 rounded-none focus:outline-none" value="0" readonly>
-                </div>
-
-                <!-- Pickup Stop -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Pickup Stop</label>
-                    <input type="text" name="pickup_stop" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Enter pickup location">
-                </div>
-
-                <!-- Total Seats -->
-                <div class="mb-2">
-                    <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Total Seats</label>
-                    <input type="number" name="total_seats" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="1">
-                </div>
-
-                @if($bus->bus_type === 'Commission')
-                    <!-- Commission (%) -->
-                    <div class="mb-2">
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission (%)</label>
-                        <input type="number" step="0.01" name="commission_percentage" id="commission_percentage" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" value="0">
-                    </div>
-
-                    <!-- Commission Amount -->
-                    <div class="mb-2">
-                        <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Commission Amount</label>
-                        <input type="number" step="0.01" name="commission_amount" id="commission_amount" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-gray-50 text-[14px]" value="0" readonly>
-                    </div>
-                @endif
-            </div>
-
-            <!-- Note -->
-            <div class="mb-4 mt-2">
-                <label class="block text-[13px] font-bold text-gray-700 uppercase tracking-wide mb-1">Note</label>
-                <textarea name="note" rows="2" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px]" placeholder="Additional remarks"></textarea>
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full bg-[#f0b44b] text-[#1c2238] font-bold py-3 rounded-none hover:bg-[#e0a43b] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                Select a Seat to Book
-            </button>
-        </form>
-    </div>
-</div>
 
 <!-- Passenger List Filter & Table -->
 <div class="mt-8 bg-white rounded-none shadow-sm overflow-hidden">
@@ -468,6 +166,8 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search passenger..." class="pl-3 pr-3 py-1.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] min-w-[180px]">
             </div>
             
+            <input type="date" name="filter_date" value="{{ request('filter_date') }}" class="px-3 py-1.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px] text-gray-600">
+
             <select name="ac_type" onchange="this.form.submit()" class="px-3 py-1.5 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[13px]">
                 <option value="">All Types</option>
                 <option value="Ac" {{ request('ac_type') == 'Ac' ? 'selected' : '' }}>AC</option>
@@ -477,9 +177,12 @@
             <button type="submit" class="px-4 py-1.5 bg-[#f0b44b] text-[#1c2238] font-bold text-[13px] rounded-none hover:bg-[#e0a43b] transition-colors">
                 Filter
             </button>
-            <a href="{{ route('buses.show', ['bus' => $bus->id, 'date' => $selectedDate]) }}" class="px-4 py-1.5 bg-gray-100 text-gray-600 font-bold text-[13px] rounded-none hover:bg-gray-200 transition-colors">
+            <a href="{{ route('buses.show', ['bus' => $bus->id]) }}" class="px-4 py-1.5 bg-gray-100 text-gray-600 font-bold text-[13px] rounded-none hover:bg-gray-200 transition-colors">
                 Clear
             </a>
+            <button type="submit" formaction="{{ route('buses.register', $bus->id) }}" formtarget="_blank" class="px-4 py-1.5 bg-[#1c2238] text-[#f0b44b] font-bold text-[13px] rounded-none hover:bg-[#2a3454] transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print
+            </button>
         </form>
     </div>
     
@@ -508,11 +211,21 @@
                         </a>
                     </th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Contact</th>
+                    <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'journey_date', 'sort_dir' => ($sortBy == 'journey_date' && $sortDir == 'desc') ? 'asc' : 'desc']) }}" class="flex items-center hover:text-[#1c2238] transition-colors">
+                            Route & Journey
+                            @if($sortBy == 'journey_date')
+                                <i class="fa-solid fa-sort-{{ $sortDir == 'asc' ? 'up mt-1' : 'down mb-1' }} ml-1"></i>
+                            @else
+                                <i class="fa-solid fa-sort ml-1 opacity-40"></i>
+                            @endif
+                        </a>
+                    </th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Village / Pickup</th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">AC/Non AC</th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">
                         <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'total_amount', 'sort_dir' => ($sortBy == 'total_amount' && $sortDir == 'asc') ? 'desc' : 'asc']) }}" class="flex items-center hover:text-[#1c2238] transition-colors">
-                            Amt / Payable
+                            Amt/Adv/Baki
                             @if($sortBy == 'total_amount')
                                 <i class="fa-solid fa-sort-{{ $sortDir == 'asc' ? 'up mt-1' : 'down mb-1' }} ml-1"></i>
                             @else
@@ -520,6 +233,7 @@
                             @endif
                         </a>
                     </th>
+                    <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Booking Date</th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Traveler</th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white">Note</th>
                     <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-white text-right">Action</th>
@@ -532,13 +246,25 @@
                     <td class="px-6 py-4 text-[13px] font-semibold text-[#1c2238]">{{ $passenger->passenger_name }}</td>
                     <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">{{ $passenger->passenger_mobile ?: 'N/A' }}</td>
                     <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">
-                        {{ $passenger->village_name ?: '-' }} <br>
+                        {{ \Carbon\Carbon::parse($passenger->journey_date)->format('d M, Y') }} <br>
+                        @if($passenger->from_place || $passenger->to_place)
+                            <span class="text-[11px] text-gray-500 font-bold">{{ $passenger->from_place }} @if($passenger->to_place) - {{ $passenger->to_place }} @endif</span>
+                        @else
+                            <span class="text-[11px] text-gray-400">-</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">
                         <span class="text-[11px] text-gray-400">Pickup: {{ $passenger->pickup_stop ?: '-' }}</span>
                     </td>
                     <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">{{ $passenger->ac_type }}</td>
-                    <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">
-                        ₹{{ $passenger->total_amount }} <br>
-                        <span class="text-[11px] text-green-600 font-bold">₹{{ $passenger->payable_amount }}</span>
+                    <td class="px-6 py-4 text-[13px] text-gray-600 font-medium whitespace-nowrap">
+                        <span class="text-gray-800 font-bold">₹{{ $passenger->total_amount }}</span> <br>
+                        <span class="text-[11px] text-green-600 font-bold">Adv: ₹{{ $passenger->payable_amount }}</span> <br>
+                        <span class="text-[11px] text-red-600 font-bold">Baki: ₹{{ number_format($passenger->total_amount - $passenger->payable_amount, 2) }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-[13px] text-gray-600 font-medium whitespace-nowrap">
+                        {{ $passenger->created_at->format('d M, Y') }}<br>
+                        <span class="text-[11px] text-gray-400">{{ $passenger->created_at->format('h:i A') }}</span>
                     </td>
                     <td class="px-6 py-4 text-[13px] text-gray-600 font-medium">
                         {{ $passenger->traveler_name ?: '-' }} <br>
@@ -587,7 +313,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="px-6 py-8 text-center text-[13px] text-gray-500 font-medium">No passengers booked on this bus yet.</td>
+                    <td colspan="11" class="px-6 py-8 text-center text-[13px] text-gray-500 font-medium">No passengers booked on this bus yet.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -657,29 +383,36 @@
         const commAmountInput = document.getElementById('commission_amount');
         const payableAmountInput = document.getElementById('payable_amount');
         const bakiPaymentInput = document.getElementById('baki_payment');
-
+        const perSeatPriceInput = document.getElementById('per_seat_price');
+        
         if (totalAmountInput) {
-            const calculateAmounts = () => {
-                const total = parseFloat(totalAmountInput.value) || 0;
-                
-                // Commission
-                if(commPercentInput && commAmountInput) {
-                    const percent = parseFloat(commPercentInput.value) || 0;
-                    const commAmount = (total * percent) / 100;
-                    commAmountInput.value = commAmount.toFixed(2);
+            const calculateAmounts = (source = null) => {
+                if (perSeatPriceInput && totalSeatsInput && source === 'per_seat') {
+                    const seats = parseFloat(totalSeatsInput.value) || 0;
+                    const price = parseFloat(perSeatPriceInput.value) || 0;
+                    totalAmountInput.value = (seats * price).toFixed(2);
                 }
-                
-                // Baki Payment
+
+                const total = parseFloat(totalAmountInput.value) || 0;
+                if(commPercentInput && commAmountInput) {
+                    const perSeatComm = parseFloat(commPercentInput.value) || 0;
+                    const seats = parseFloat(totalSeatsInput.value) || 1;
+                    commAmountInput.value = (seats * perSeatComm).toFixed(2);
+                }
                 if(payableAmountInput && bakiPaymentInput) {
                     const advance = parseFloat(payableAmountInput.value) || 0;
-                    const baki = total - advance;
-                    bakiPaymentInput.value = baki.toFixed(2);
+                    bakiPaymentInput.value = (total - advance).toFixed(2);
                 }
             };
 
-            totalAmountInput.addEventListener('input', calculateAmounts);
-            if(commPercentInput) commPercentInput.addEventListener('input', calculateAmounts);
-            if(payableAmountInput) payableAmountInput.addEventListener('input', calculateAmounts);
+            totalAmountInput.addEventListener('input', () => calculateAmounts('total'));
+            if(commPercentInput) commPercentInput.addEventListener('input', () => calculateAmounts('comm'));
+            if(payableAmountInput) payableAmountInput.addEventListener('input', () => calculateAmounts('pay'));
+            if(perSeatPriceInput) perSeatPriceInput.addEventListener('input', () => calculateAmounts('per_seat'));
+            if(totalSeatsInput) totalSeatsInput.addEventListener('input', () => {
+                if (perSeatPriceInput && perSeatPriceInput.value) calculateAmounts('per_seat');
+                else calculateAmounts();
+            });
         }
 
         let selectedSeats = [];
@@ -727,6 +460,14 @@
 
                     seatInput.value = selectedSeats.join(', ');
                     totalSeatsInput.value = selectedSeats.length || 1;
+                    
+                    if (document.getElementById('per_seat_price') && document.getElementById('per_seat_price').value) {
+                        const price = parseFloat(document.getElementById('per_seat_price').value) || 0;
+                        if (totalAmountInput) {
+                            totalAmountInput.value = ((selectedSeats.length || 1) * price).toFixed(2);
+                            totalAmountInput.dispatchEvent(new Event('input'));
+                        }
+                    }
 
                     if (selectedSeats.length > 0) {
                         submitBtn.disabled = false;
