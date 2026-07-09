@@ -140,6 +140,14 @@
             </div>
         </div>
 
+        <!-- Personal Accounts -->
+        <a href="{{ route('personal-accounts.index') }}" class="flex items-center px-4 py-3 mb-1 text-sm font-medium rounded-none transition-all duration-200 {{ request()->routeIs('personal-accounts.*') ? 'bg-[#f0b44b] text-[#1c2238] shadow-md shadow-[#f0b44b]/20' : 'border-l-[3px] border-transparent hover:border-[#f0b44b] hover:bg-white/5 hover:text-white hover:pl-5' }}">
+            <svg class="w-5 h-5 mr-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span class="sidebar-text">Personal Accounts</span>
+        </a>
+
         <!-- Settings -->
         <a href="{{ route('settings.index') }}" class="flex items-center px-4 py-3 mb-6 text-sm font-medium rounded-none transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-[#f0b44b] text-[#1c2238] shadow-md shadow-[#f0b44b]/20' : 'border-l-[3px] border-transparent hover:border-[#f0b44b] hover:bg-white/5 hover:text-white hover:pl-5' }}">
             <svg class="w-5 h-5 mr-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
