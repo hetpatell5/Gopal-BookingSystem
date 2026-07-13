@@ -92,18 +92,16 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto max-h-[70vh] overflow-y-auto relative border-t border-gray-100">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 w-[50px] bg-gray-50 border-b border-gray-100">
+                        <th class="px-6 py-4 w-[50px] bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                             <input type="checkbox" id="select-all"
                                 class="w-4 h-4 rounded-none border-gray-300 text-[#f0b44b] focus:ring-[#f0b44b]">
                         </th>
-                        <th
-                            class="px-4 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 border-b border-gray-100">
-                            #</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
+                        <th class="px-4 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">#</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                             <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'journey_date', 'sort_dir' => ($sortBy == 'journey_date' && $sortDir == 'asc') ? 'desc' : 'asc']) }}"
                                 class="flex items-center hover:text-[#1c2238] transition-colors">
                                 Journey Date
@@ -114,7 +112,7 @@
                                 @endif
                             </a>
                         </th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                             <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_dir' => ($sortBy == 'created_at' && $sortDir == 'asc') ? 'desc' : 'asc']) }}"
                                 class="flex items-center hover:text-[#1c2238] transition-colors">
                                 Booking Date
@@ -125,11 +123,9 @@
                                 @endif
                             </a>
                         </th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Bus
-                        </th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
-                            Seat(s)</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Bus</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Seat(s)</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                             <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'passenger_name', 'sort_dir' => ($sortBy == 'passenger_name' && $sortDir == 'asc') ? 'desc' : 'asc']) }}"
                                 class="flex items-center hover:text-[#1c2238] transition-colors">
                                 Passenger
@@ -140,14 +136,12 @@
                                 @endif
                             </a>
                         </th>
-                        <th
-                            class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 text-center">
-                            Total Seats</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Jama</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Payment Type</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Collected By</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Baki</th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 text-center sticky top-0 z-10 shadow-sm">Total Seats</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Jama</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Payment Type</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Collected By</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Baki</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
                             <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'total_amount', 'sort_dir' => ($sortBy == 'total_amount' && $sortDir == 'asc') ? 'desc' : 'asc']) }}"
                                 class="flex items-center hover:text-[#1c2238] transition-colors">
                                 Total
@@ -158,11 +152,8 @@
                                 @endif
                             </a>
                         </th>
-                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Note
-                        </th>
-                        <th
-                            class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 text-right">
-                            Actions</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 sticky top-0 z-10 shadow-sm">Note</th>
+                        <th class="px-6 py-4 text-[13px] font-bold text-gray-700 whitespace-nowrap bg-gray-50 border-b border-gray-200 text-right sticky top-0 z-10 shadow-sm">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -206,10 +197,10 @@
                                     class="inline-payment-field w-full text-[12px] font-semibold border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-white cursor-pointer min-w-[110px] transition-all"
                                     style="color: {{ $passenger->payment_method == 'Cash' ? '#16a34a' : ($passenger->payment_method == 'GooglePay' ? '#2563eb' : '#6b7280') }}">
                                     <option value="" {{ empty($passenger->payment_method) ? 'selected' : '' }}>— Select —</option>
-                                    <option value="Cash" {{ $passenger->payment_method == 'Cash' ? 'selected' : '' }}>💵 Cash</option>
-                                    <option value="GooglePay" {{ $passenger->payment_method == 'GooglePay' ? 'selected' : '' }}>📱 Google Pay</option>
-                                    <option value="PhonePe" {{ $passenger->payment_method == 'PhonePe' ? 'selected' : '' }}>📱 PhonePe</option>
-                                    <option value="Bank Transfer" {{ $passenger->payment_method == 'Bank Transfer' ? 'selected' : '' }}>🏦 Bank Transfer</option>
+                                    <option value="Cash" {{ $passenger->payment_method == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                    <option value="GooglePay" {{ $passenger->payment_method == 'GooglePay' ? 'selected' : '' }}>Google Pay</option>
+                                    <option value="PhonePe" {{ $passenger->payment_method == 'PhonePe' ? 'selected' : '' }}>PhonePe</option>
+                                    <option value="Bank Transfer" {{ $passenger->payment_method == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
                                 </select>
                             </td>
                             {{-- Collected By inline --}}

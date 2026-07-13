@@ -442,10 +442,10 @@
                     <label class="block text-[13px] font-black text-[#1c2238] uppercase tracking-wide mb-1">Payment Type</label>
                     <select name="payment_method" class="w-full px-3 py-2 border border-gray-200 rounded-none focus:outline-none focus:ring-2 focus:ring-[#f0b44b] text-[14px] bg-white" {{ !$selectedBusId ? 'disabled' : '' }}>
                         <option value="" {{ old('payment_method') == '' ? 'selected' : '' }}>— Select —</option>
-                        <option value="Cash" {{ old('payment_method') == 'Cash' ? 'selected' : '' }}>💵 Cash</option>
-                        <option value="GooglePay" {{ old('payment_method') == 'GooglePay' ? 'selected' : '' }}>📱 Google Pay</option>
-                        <option value="PhonePe" {{ old('payment_method') == 'PhonePe' ? 'selected' : '' }}>📱 PhonePe</option>
-                        <option value="Bank Transfer" {{ old('payment_method') == 'Bank Transfer' ? 'selected' : '' }}>🏦 Bank Transfer</option>
+                        <option value="Cash" {{ old('payment_method') == 'Cash' ? 'selected' : '' }}>Cash</option>
+                        <option value="GooglePay" {{ old('payment_method') == 'GooglePay' ? 'selected' : '' }}>Google Pay</option>
+                        <option value="PhonePe" {{ old('payment_method') == 'PhonePe' ? 'selected' : '' }}>PhonePe</option>
+                        <option value="Bank Transfer" {{ old('payment_method') == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
                     </select>
                 </div>
 
