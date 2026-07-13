@@ -145,14 +145,20 @@ class PassengerController extends Controller
             
             $adminWhatsApp = auth()->check() && !empty(auth()->user()->whatsapp_number) ? "\n*Support:* " . auth()->user()->whatsapp_number : "";
 
-            $message = "🎫 *TICKET CONFIRMATION* 🎫\n\n"
-                     . "*Bus:* {$busName}\n"
-                     . "*Passenger:* {$passenger->passenger_name}\n"
-                     . "*Seat No:* {$passenger->seat_number}\n"
-                     . "*Date:* {$date}\n"
-                     . "*Amount:* Rs {$passenger->total_amount}\n"
-                     . $adminWhatsApp . "\n\n"
-                     . "Thank you for booking with Setu! Have a safe journey.";
+            $pickupLocation = $passenger->pickup_stop ?: ($passenger->from_place ?: 'N/A');
+            $busTime = $passenger->bus_time ?: 'N/A';
+            $bakiPayment = $passenger->payable_amount ?: '0';
+
+            $message = "*TICKET CONFIRMATION*\n\n"
+                     . "Passenger Name: {$passenger->passenger_name}\n"
+                     . "Bus Name: {$busName}\n"
+                     . "Seat No: {$passenger->seat_number}\n"
+                     . "Date: {$date}\n"
+                     . "Pick-up Location: {$pickupLocation}\n"
+                     . "Pickup Time: {$busTime}\n"
+                     . "Baki Payment: Rs {$bakiPayment}\n\n"
+                     . "Office Name: Jay Gopal Travels\n"
+                     . "Mobile Number: 9904172734";
             
             // Clean mobile number (assuming India +91 default)
             $mobile = preg_replace('/[^0-9]/', '', $passenger->passenger_mobile);
