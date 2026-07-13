@@ -14,7 +14,8 @@ class AccountingController extends Controller
         // ── Base query filters ──────────────────────────────────────────────
         $baseQuery = Passenger::query()
             ->when($request->filled('date_from'), fn($q) => $q->whereDate('created_at', '>=', $request->date_from))
-            ->when($request->filled('date_to'),   fn($q) => $q->whereDate('created_at', '<=', $request->date_to));
+            ->when($request->filled('date_to'),   fn($q) => $q->whereDate('created_at', '<=', $request->date_to))
+            ->when($request->filled('bus_id'),    fn($q) => $q->where('bus_id', $request->bus_id));
 
         // Apply bus_type filter for ledger toggle
         $ledgerQuery = (clone $baseQuery)
@@ -22,7 +23,10 @@ class AccountingController extends Controller
                 $q->whereHas('bus', fn($bq) => $bq->where('bus_type', $request->bus_type))
             );
 
-        $buses = Bus::orderBy('bus_type')->orderBy('name')->get();
+        $buses = Bus::orderBy('bus_type')->orderBy('name')
+            ->when($request->filled('bus_id'), fn($q) => $q->where('id', $request->bus_id))
+            ->get();
+        $allBuses = Bus::orderBy('name')->get(); // For the dropdown
 
         // ── Per-bus accounting ──────────────────────────────────────────────
         // total_amount    = full ticket fare billed
@@ -38,9 +42,9 @@ class AccountingController extends Controller
                 DB::raw('SUM(total_seats)                                    as total_seats_sold'),
                 DB::raw('SUM(total_amount)                                   as total_revenue'),       // gross billed
                 DB::raw('SUM(payable_amount)                                 as total_advance'),       // advance collected
-                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending'),       // still owed
+                DB::raw('SUM(total_amount - payable_amount)                  as total_pending'),       // still owed by passenger
                 DB::raw('SUM(commission_amount)                              as total_commission'),    // commission
-                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue')   // owner keeps from agent
+                DB::raw('SUM(total_amount - commission_amount)               as total_net_revenue')    // owner's true net profit
             )
             ->groupBy('bus_id')
             ->get()
@@ -54,7 +58,7 @@ class AccountingController extends Controller
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending
+                SUM(total_amount - payable_amount)     as pending
             ')
             ->first();
 
@@ -66,9 +70,9 @@ class AccountingController extends Controller
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending,
+                SUM(total_amount - payable_amount)     as pending,
                 SUM(commission_amount)                 as commission,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END)  as net_revenue
+                SUM(total_amount - commission_amount)  as net_revenue
             ')
             ->first();
 
@@ -88,7 +92,7 @@ class AccountingController extends Controller
         }
 
         return view('accounting.index', compact(
-            'buses', 'accountingData', 'personalData', 'commissionData'
+            'buses', 'allBuses', 'accountingData', 'personalData', 'commissionData'
         ));
     }
 
@@ -118,9 +122,9 @@ class AccountingController extends Controller
                 SUM(total_seats) as total_seats_sold,
                 SUM(total_amount) as total_revenue,
                 SUM(payable_amount) as total_advance,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending,
+                SUM(total_amount - payable_amount) as total_pending,
                 SUM(commission_amount) as total_commission,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue
+                SUM(total_amount - commission_amount) as total_net_revenue
             ')
             ->first();
 

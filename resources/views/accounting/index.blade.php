@@ -69,6 +69,15 @@
             <input type="date" name="date_to" value="{{ request('date_to') }}"
                    class="w-full border border-gray-200 rounded-none px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#f0b44b]">
         </div>
+        <div class="min-w-[180px] flex-1">
+            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Search Bus</label>
+            <select name="bus_id" class="w-full border border-gray-200 rounded-none px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-white">
+                <option value="">All Buses</option>
+                @foreach($allBuses as $b)
+                    <option value="{{ $b->id }}" {{ request('bus_id') == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <input type="hidden" name="bus_type" value="{{ request('bus_type') }}">
         <div class="flex gap-2 shrink-0">
             <button type="submit" class="bg-[#1c2238] text-white font-bold text-[13px] px-5 py-2 rounded-none hover:bg-[#29324b] transition-colors">
@@ -121,9 +130,9 @@
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Revenue</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
         <p class="text-[28px] font-black text-indigo-600 leading-none mb-1">₹{{ number_format($grandNet, 0) }}</p>
-        <p class="text-[11px] text-gray-500">After deducting commission</p>
+        <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
 </div>
 
