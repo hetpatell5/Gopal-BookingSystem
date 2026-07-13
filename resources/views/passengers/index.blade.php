@@ -144,6 +144,8 @@
                             class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 text-center">
                             Total Seats</th>
                         <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Jama</th>
+                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Payment Type</th>
+                        <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Collected By</th>
                         <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">Baki</th>
                         <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50">
                             <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'total_amount', 'sort_dir' => ($sortBy == 'total_amount' && $sortDir == 'asc') ? 'desc' : 'asc']) }}"
@@ -197,6 +199,25 @@
                                <td class="px-7 py-4 text-[13px] font-bold text-gray-600 text-center">{{ $passenger->total_seats }} x {{ number_format($passenger->per_seat_price ?? 0, 2) }}</td>
                             <td class="px-6 py-4 text-[13px] font-bold text-green-600">
                                 ₹{{ number_format($passenger->payable_amount, 2) }}
+                            </td>
+                            {{-- Payment Type inline --}}
+                            <td class="px-3 py-3">
+                                <select data-passenger-id="{{ $passenger->id }}" data-field="payment_method"
+                                    class="inline-payment-field w-full text-[12px] font-semibold border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-white cursor-pointer min-w-[110px] transition-all"
+                                    style="color: {{ $passenger->payment_method == 'Cash' ? '#16a34a' : ($passenger->payment_method == 'GooglePay' ? '#2563eb' : '#6b7280') }}">
+                                    <option value="" {{ empty($passenger->payment_method) ? 'selected' : '' }}>— Select —</option>
+                                    <option value="Cash" {{ $passenger->payment_method == 'Cash' ? 'selected' : '' }}>💵 Cash</option>
+                                    <option value="GooglePay" {{ $passenger->payment_method == 'GooglePay' ? 'selected' : '' }}>📱 Google Pay</option>
+                                    <option value="PhonePe" {{ $passenger->payment_method == 'PhonePe' ? 'selected' : '' }}>📱 PhonePe</option>
+                                    <option value="Bank Transfer" {{ $passenger->payment_method == 'Bank Transfer' ? 'selected' : '' }}>🏦 Bank Transfer</option>
+                                </select>
+                            </td>
+                            {{-- Collected By inline --}}
+                            <td class="px-3 py-3">
+                                <input type="text" data-passenger-id="{{ $passenger->id }}" data-field="payment_collected_by"
+                                    value="{{ $passenger->payment_collected_by }}"
+                                    placeholder="Name..."
+                                    class="inline-payment-field w-full text-[12px] font-semibold border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#f0b44b] bg-white min-w-[110px] transition-all" />
                             </td>
                             <td class="px-6 py-4 text-[13px] font-bold text-red-500">
                                 ₹{{ number_format($passenger->total_amount - $passenger->payable_amount, 2) }}
@@ -348,5 +369,57 @@
                 }, 400);
             });
         })();
+    </script>
+
+    <script>
+        // Inline Payment Field AJAX Auto-Save
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+        function saveInlinePayment(passengerId, field, value, el) {
+            el.style.borderColor = '#f0b44b';
+            fetch(`/passengers/${passengerId}/update-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ [field]: value }),
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    el.style.borderColor = '#16a34a';
+                    // Update colour for payment_method select
+                    if (el.tagName === 'SELECT') {
+                        const colors = { Cash: '#16a34a', GooglePay: '#2563eb', PhonePe: '#7c3aed', 'Bank Transfer': '#0369a1' };
+                        el.style.color = colors[value] || '#6b7280';
+                    }
+                    setTimeout(() => { el.style.borderColor = ''; }, 1500);
+                }
+            })
+            .catch(() => { el.style.borderColor = '#ef4444'; });
+        }
+
+        document.querySelectorAll('.inline-payment-field').forEach(el => {
+            if (el.tagName === 'SELECT') {
+                el.addEventListener('change', function () {
+                    saveInlinePayment(this.dataset.passengerId, this.dataset.field, this.value, this);
+                });
+            } else {
+                let timer;
+                el.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    const self = this;
+                    timer = setTimeout(() => {
+                        saveInlinePayment(self.dataset.passengerId, self.dataset.field, self.value, self);
+                    }, 600);
+                });
+                el.addEventListener('blur', function () {
+                    clearTimeout(timer);
+                    saveInlinePayment(this.dataset.passengerId, this.dataset.field, this.value, this);
+                });
+            }
+        });
     </script>
 @endsection

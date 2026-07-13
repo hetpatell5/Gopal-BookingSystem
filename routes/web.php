@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/passengers/register', [PassengerController::class, 'printRegister'])->name('passengers.register');
     Route::post('/passengers/bulk-delete', [PassengerController::class, 'bulkDestroy'])->name('passengers.bulk_destroy');
     Route::post('/passengers/{passenger}/toggle-hisab', [PassengerController::class, 'toggleHisab'])->name('passengers.toggle_hisab');
+    Route::post('/passengers/{passenger}/update-payment', [PassengerController::class, 'updatePayment'])->name('passengers.update_payment');
     Route::resource('passengers', PassengerController::class);
     
     Route::get('/broadcast', [App\Http\Controllers\BroadcastController::class, 'index'])->name('broadcast.index');

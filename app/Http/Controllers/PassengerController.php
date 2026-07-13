@@ -300,4 +300,14 @@ class PassengerController extends Controller
 
         return view('passengers.register', compact('passengers', 'selectedDate', 'totalRevenue', 'totalPayable', 'totalCommission', 'bus'));
     }
+
+    public function updatePayment(Request $request, Passenger $passenger)
+    {
+        $passenger->update([
+            'payment_method'       => $request->input('payment_method'),
+            'payment_collected_by' => $request->input('payment_collected_by'),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }
