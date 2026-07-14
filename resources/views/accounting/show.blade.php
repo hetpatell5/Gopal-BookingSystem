@@ -212,7 +212,7 @@
             <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }} t-b">₹{{ number_format($pend, 2) }}</td>
             @if($bus->bus_type === 'Commission')
             <td class="r t-sky">₹{{ number_format($booking->commission_amount, 2) }}</td>
-            <td class="r t-b t-grn">₹{{ number_format($net, 2) }}</td>
+            <td class="r t-b {{ $net == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($net, 2) }}</td>
             @endif
             {{-- Inline editable: Person Name --}}
             <td>
@@ -286,7 +286,7 @@
           <td class="r {{ ($totals->total_pending ?? 0) > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($totals->total_pending ?? 0, 2) }}</td>
           @if($bus->bus_type === 'Commission')
           <th class="r t-sky">₹{{ number_format($totals->total_commission ?? 0, 2) }}</th>
-          <th class="r t-grn">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
+          <th class="r {{ ($totals->total_net_revenue ?? 0) == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
           @endif
           <td colspan="3"></td>
           <td class="c"></td>

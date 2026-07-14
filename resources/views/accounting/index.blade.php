@@ -131,7 +131,7 @@
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
-        <p class="text-[28px] font-black leading-none mb-1 t-grn">₹{{ number_format($grandNet, 0) }}</p>
+        <p class="text-[28px] font-black leading-none mb-1 {{ $grandNet == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($grandNet, 0) }}</p>
         <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
 </div>
@@ -297,7 +297,7 @@
         </div>
         <div style="width:160px; text-align:right;">
           <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Net to Owner</div>
-          <div style="font-size:20px; font-weight:900; color:#34d399;">₹{{ number_format($grandNet, 2) }}</div>
+          <div style="font-size:20px; font-weight:900; color:{{ $grandNet == 0 ? '#34d399' : '#f43f5e' }};">₹{{ number_format($grandNet, 2) }}</div>
         </div>
       </div>
     </div>
@@ -339,8 +339,8 @@
           <td class="c">{{ $d->total_bookings }}</td>
           <td class="r t-b">₹{{ number_format($d->total_revenue, 2) }}</td>
           <td class="r t-blu t-b">₹{{ number_format($d->total_commission, 2) }}</td>
-          <td class="r t-b t-grn">
-            ₹{{ number_format($d->total_net_revenue, 2) }}
+          <td class="r t-b {{ ($d->total_net_revenue ?? 0) == 0 ? 't-grn' : 't-ros' }}">
+            ₹{{ number_format($d->total_net_revenue ?? 0, 2) }}
           </td>
           <td class="c">
               <a href="{{ route('accounting.show', $bus->id) }}?{{ request()->getQueryString() }}" class="text-[#1c2238] hover:text-[#f0b44b] transition-colors font-bold text-xs uppercase tracking-widest">
@@ -356,7 +356,7 @@
         <td class="c">{{ $commissionBuses->sum(fn($b) => $accountingData->get($b->id)->total_bookings ?? 0) }}</td>
         <td class="r">₹{{ number_format($cRev, 2) }}</td>
         <td class="r t-blu t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
-        <td class="r t-b t-grn" style="font-size: 15px;">
+        <td class="r t-b {{ $cNet == 0 ? 't-grn' : 't-ros' }}" style="font-size: 15px;">
             ₹{{ number_format(abs($cNet), 2) }}
         </td>
         <td></td>
