@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/accounting', [AccountingController::class, 'index'])->name('accounting.index');
     Route::post('/accounting/{bus}/toggle-daily-hisab', [AccountingController::class, 'toggleDailyHisab'])->name('accounting.toggle_daily_hisab');
+    Route::post('/accounting/{bus}/update-hisab-contact', [AccountingController::class, 'updateHisabContact'])->name('accounting.update_hisab_contact');
     Route::get('/accounting/{bus}', [AccountingController::class, 'show'])->name('accounting.show');
     
     Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');

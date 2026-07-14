@@ -110,7 +110,10 @@ class AccountingController extends Controller
                 DB::raw('SUM(total_amount) as total_amount'),
                 DB::raw('SUM(payable_amount) as payable_amount'),
                 DB::raw('SUM(commission_amount) as commission_amount'),
-                DB::raw('MIN(is_hisab_completed) as is_hisab_completed')
+                DB::raw('MIN(is_hisab_completed) as is_hisab_completed'),
+                DB::raw('MAX(hisab_person_name) as hisab_person_name'),
+                DB::raw('MAX(hisab_collection_date) as hisab_collection_date'),
+                DB::raw('MAX(hisab_mobile_number) as hisab_mobile_number')
             )
             ->groupBy('journey_date')
             ->orderBy('journey_date', 'desc')
@@ -141,6 +144,26 @@ class AccountingController extends Controller
         }
 
         return view('accounting.show', compact('bus', 'bookings', 'totals'));
+    }
+
+    public function updateHisabContact(Request $request, Bus $bus)
+    {
+        $request->validate([
+            'journey_date'          => 'required|date',
+            'hisab_person_name'     => 'nullable|string|max:255',
+            'hisab_collection_date' => 'nullable|date',
+            'hisab_mobile_number'   => 'nullable|string|max:20',
+        ]);
+
+        Passenger::where('bus_id', $bus->id)
+            ->whereDate('journey_date', $request->journey_date)
+            ->update([
+                'hisab_person_name'     => $request->hisab_person_name,
+                'hisab_collection_date' => $request->hisab_collection_date,
+                'hisab_mobile_number'   => $request->hisab_mobile_number,
+            ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function toggleDailyHisab(Request $request, Bus $bus)

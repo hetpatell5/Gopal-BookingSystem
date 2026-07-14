@@ -58,34 +58,32 @@
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Revenue</p>
         <p class="text-[28px] font-black text-green-600 leading-none mb-1">₹{{ number_format($totals->total_revenue ?? 0, 2) }}</p>
+        <p class="text-[11px] text-gray-500">Total fare billed to passengers</p>
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Advance Collected</p>
         <p class="text-[28px] font-black text-blue-600 leading-none mb-1">₹{{ number_format($totals->total_advance ?? 0, 2) }}</p>
+        <p class="text-[11px] text-gray-500">Received upfront from passengers</p>
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bus Ma Apela</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bus Ma Apela (Baki)</p>
         <p class="text-[28px] font-black {{ ($totals->total_pending ?? 0) > 0 ? 'text-rose-500' : 'text-emerald-500' }} leading-none mb-1">₹{{ number_format($totals->total_pending ?? 0, 2) }}</p>
+        <p class="text-[11px] text-gray-500">Still owed by passengers</p>
     </div>
 
     @if($bus->bus_type === 'Commission')
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Commission</p>
         <p class="text-[28px] font-black text-orange-500 leading-none mb-1">₹{{ number_format($totals->total_commission ?? 0, 2) }}</p>
+        <p class="text-[11px] text-gray-500">Agent's commission deducted</p>
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-            Net Owner Revenue
-            @if(($totals->total_net_revenue ?? 0) < 0)
-                <span class="text-emerald-500 ml-1">(LEVANA)</span>
-            @else
-                <span class="text-rose-500 ml-1">(DEVANA)</span>
-            @endif
-        </p>
-        <p class="text-[28px] font-black {{ ($totals->total_net_revenue ?? 0) < 0 ? 'text-emerald-500' : 'text-[#1c2238]' }} leading-none mb-1">₹{{ number_format(abs($totals->total_net_revenue ?? 0), 2) }}</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
+        <p class="text-[28px] font-black text-emerald-600 leading-none mb-1">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</p>
+        <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
     @endif
 </div>
@@ -110,11 +108,11 @@
 .ld-title h2 { margin:0 0 3px; font-size:16px; font-weight:800; color:#1c2238; text-transform:uppercase; letter-spacing:0.05em; }
 .ld-title p  { margin:0; font-size:12px; font-weight:700; color:#9ca3af; letter-spacing:0.02em; }
 .ld-table { width:100%; border-collapse:collapse; }
-.ld-table th, .ld-table td { padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:13px; }
-.ld-table th { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#6b7280; background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb; }
-.ld-table tbody tr:hover { background:#f9fafb; }
+.ld-table th, .ld-table td { padding:10px 14px; border-bottom:1px solid #f3f4f6; font-size:13px; }
+.ld-table th { font-size:12px; font-weight:700; color:#374151; background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb; white-space:nowrap; }
+.ld-table tbody tr:hover { background:#fafafa; }
 .ld-table tbody tr:last-child td { border-bottom:none; }
-.ld-subtotal td { background:#f3f4f6; border-top:2px solid #d1d5db; border-bottom:none !important; font-weight:700; font-size:13px; }
+.ld-subtotal td, .ld-subtotal th { background:#f3f4f6; border-top:2px solid #d1d5db; border-bottom:none !important; font-weight:700; font-size:13px; }
 .r { text-align:right !important; }
 .c { text-align:center !important; }
 .t-mut { color:#9ca3af; }
@@ -123,8 +121,35 @@
 .t-blu { color:#60a5fa; }
 .t-sky { color:#0ea5e9; }
 .t-egrn{ color:#34d399; }
-.t-wht { color:#fff; }
 .t-b   { font-weight:700; }
+.inline-contact-input {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 12px;
+  width: 100%;
+  min-width: 100px;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+}
+.inline-contact-input:hover {
+  border-color: #d1d5db;
+  background: #fff;
+}
+.inline-contact-input:focus {
+  border-color: #f0b44b;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(240,180,75,0.15);
+}
+.inline-contact-input.saved {
+  border-color: #34d399;
+  animation: flash-green 0.5s ease;
+}
+@keyframes flash-green {
+  0%   { background:#d1fae5; }
+  100% { background:#fff; }
+}
 </style>
 
 <div class="ledger-container">
@@ -139,6 +164,7 @@
   </div>
 
   @if($bookings->count() > 0)
+    <div class="overflow-x-auto">
     <table class="ld-table">
       <thead>
         <tr>
@@ -152,39 +178,92 @@
           <th class="r">Commission</th>
           <th class="r">Net to Owner</th>
           @endif
+          <th>Person Name</th>
+          <th>Collection Date</th>
+          <th>Mobile No.</th>
           <th class="c">Status</th>
+          <th class="c">Actions</th>
         </tr>
       </thead>
       <tbody>
         @foreach($bookings as $booking)
           @php
-              $pend = $booking->total_amount - $booking->payable_amount;
-              $net = $booking->payable_amount - $booking->commission_amount;
+              // If hisab is completed/paid, pending is effectively 0
+              $pend = $booking->is_hisab_completed ? 0 : ($booking->total_amount - $booking->payable_amount);
+              // Net to Owner = Gross Revenue - Commission (always profit, shown in green)
+              $net  = $booking->total_amount - $booking->commission_amount;
           @endphp
-          <tr>
+          <tr class="contact-row" data-journey-date="{{ $booking->journey_date }}">
             <td class="t-b">{{ \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') }}</td>
             <td class="c text-gray-500 font-bold">{{ $booking->total_bookings }}</td>
             <td class="c">{{ $booking->total_seats }}</td>
             <td class="r t-b">₹{{ number_format($booking->total_amount, 2) }}</td>
             <td class="r t-sky">₹{{ number_format($booking->payable_amount, 2) }}</td>
-            <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($pend, 2) }}</td>
+            <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }} t-b">₹{{ number_format($pend, 2) }}</td>
             @if($bus->bus_type === 'Commission')
             <td class="r t-sky">₹{{ number_format($booking->commission_amount, 2) }}</td>
-            <td class="r t-b {{ $net < 0 ? 'text-emerald-600' : 'text-rose-600' }}">
-                ₹{{ number_format(abs($net), 2) }} <span style="font-size: 10px;">{{ $net < 0 ? '(L)' : '(D)' }}</span>
-            </td>
+            <td class="r t-b t-grn">₹{{ number_format($net, 2) }}</td>
             @endif
+            {{-- Inline editable: Person Name --}}
+            <td>
+              <input type="text"
+                     class="inline-contact-input contact-field"
+                     data-field="hisab_person_name"
+                     value="{{ $booking->hisab_person_name }}"
+                     placeholder="Person name…">
+            </td>
+            {{-- Inline editable: Collection Date --}}
+            <td>
+              <input type="date"
+                     class="inline-contact-input contact-field"
+                     data-field="hisab_collection_date"
+                     value="{{ $booking->hisab_collection_date }}">
+            </td>
+            {{-- Inline editable: Mobile Number --}}
+            <td>
+              <input type="text"
+                     class="inline-contact-input contact-field"
+                     data-field="hisab_mobile_number"
+                     value="{{ $booking->hisab_mobile_number }}"
+                     placeholder="Mobile no…"
+                     maxlength="20">
+            </td>
+            {{-- Status --}}
             <td class="c">
                 <div class="flex items-center justify-center gap-2">
-                    <input type="checkbox" 
+                    <input type="checkbox"
                            class="daily-hisab-checkbox w-4 h-4 rounded-none border-gray-300 text-[#f0b44b] focus:ring-[#f0b44b] cursor-pointer"
-                           data-journey-date="{{ $booking->journey_date }}" 
+                           data-journey-date="{{ $booking->journey_date }}"
                            {{ $booking->is_hisab_completed ? 'checked' : '' }}
                            title="Mark Daily Hisab as Paid/Completed">
                     <span class="status-label text-[10px] font-bold {{ $booking->is_hisab_completed ? 'text-green-600' : 'text-gray-400' }}">
                         {{ $booking->is_hisab_completed ? 'PAID' : 'UNPAID' }}
                     </span>
                 </div>
+            </td>
+            {{-- Actions: WhatsApp --}}
+            <td class="c">
+              @php
+                $waMsg = "*Bus Hisab – {{ $bus->name }}*\n";
+                $waMsg .= "📅 Date: " . \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') . "\n";
+                $waMsg .= "🎫 Bookings: {$booking->total_bookings} | Seats: {$booking->total_seats}\n";
+                $waMsg .= "💰 Gross: ₹" . number_format($booking->total_amount, 2) . "\n";
+                $waMsg .= "✅ Advance: ₹" . number_format($booking->payable_amount, 2) . "\n";
+                if($pend > 0) $waMsg .= "⏳ Baki: ₹" . number_format($pend, 2) . "\n";
+                if($bus->bus_type === 'Commission') {
+                    $waMsg .= "🤝 Commission: ₹" . number_format($booking->commission_amount, 2) . "\n";
+                    $waMsg .= "🏦 Net to Owner: ₹" . number_format($net, 2) . "\n";
+                }
+                $waMsg .= "\n— Jay Gopal Travels | 9904172734";
+                $mobileForWa = $booking->hisab_mobile_number ? preg_replace('/[^0-9]/', '', $booking->hisab_mobile_number) : '';
+                if(strlen($mobileForWa) == 10) $mobileForWa = '91' . $mobileForWa;
+                $waLink = "https://wa.me/{$mobileForWa}?text=" . rawurlencode($waMsg);
+              @endphp
+              <a href="{{ $waLink }}" target="_blank"
+                 class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-50 text-green-600 hover:bg-green-500 hover:text-white transition-all text-sm"
+                 title="Send Hisab on WhatsApp">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
             </td>
           </tr>
         @endforeach
@@ -199,15 +278,15 @@
           <td class="r {{ ($totals->total_pending ?? 0) > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($totals->total_pending ?? 0, 2) }}</td>
           @if($bus->bus_type === 'Commission')
           <th class="r t-sky">₹{{ number_format($totals->total_commission ?? 0, 2) }}</th>
-          <th class="r {{ ($totals->total_net_revenue ?? 0) < 0 ? 'text-emerald-600' : 'text-rose-600' }}">
-              ₹{{ number_format(abs($totals->total_net_revenue ?? 0), 2) }}
-              <span style="font-size: 10px;">{{ ($totals->total_net_revenue ?? 0) < 0 ? '(L)' : '(D)' }}</span>
-          </th>
+          <th class="r t-grn">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
           @endif
+          <td colspan="3"></td>
+          <td class="c"></td>
           <td class="c"></td>
         </tr>
       </tfoot>
     </table>
+    </div>
   @else
     <div class="p-12 text-center text-gray-500">
         <i class="fa-solid fa-folder-open text-4xl mb-3 text-gray-300"></i>
@@ -219,67 +298,70 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.daily-hisab-checkbox');
-    
-    checkboxes.forEach(checkbox => {
+    const busId = '{{ $bus->id }}';
+    const csrfToken = '{{ csrf_token() }}';
+
+    // ── Hisab Paid/Unpaid toggle ──────────────────────────────────────────────
+    document.querySelectorAll('.daily-hisab-checkbox').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const journeyDate = this.dataset.journeyDate;
             const isChecked = this.checked;
             const label = this.nextElementSibling;
-            const busId = '{{ $bus->id }}';
-            
-            // Optimistically update label
-            if (isChecked) {
-                label.textContent = 'PAID';
-                label.classList.remove('text-gray-400', 'text-red-600');
-                label.classList.add('text-green-600');
-            } else {
-                label.textContent = 'UNPAID';
-                label.classList.remove('text-green-600');
-                label.classList.add('text-gray-400');
-            }
-            
+
+            label.textContent = isChecked ? 'PAID' : 'UNPAID';
+            label.className = 'status-label text-[10px] font-bold ' + (isChecked ? 'text-green-600' : 'text-gray-400');
+
             fetch(`/accounting/${busId}/toggle-daily-hisab`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
                 body: JSON.stringify({ journey_date: journeyDate, is_completed: isChecked })
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                if (!data.success) {
-                    alert('Failed to update status.');
-                    this.checked = !isChecked; // revert
-                    if (this.checked) {
-                        label.textContent = 'PAID';
-                        label.classList.add('text-green-600');
-                        label.classList.remove('text-gray-400');
-                    } else {
-                        label.textContent = 'UNPAID';
-                        label.classList.add('text-gray-400');
-                        label.classList.remove('text-green-600');
-                    }
-                } else {
-                    // Refresh the page to update all totals in the ledger
+                if (data.success) {
                     window.location.reload();
+                } else {
+                    this.checked = !isChecked;
+                    label.textContent = this.checked ? 'PAID' : 'UNPAID';
+                    label.className = 'status-label text-[10px] font-bold ' + (this.checked ? 'text-green-600' : 'text-gray-400');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the status.');
-                this.checked = !isChecked; // revert
-                if (this.checked) {
-                    label.textContent = 'PAID';
-                    label.classList.add('text-green-600');
-                    label.classList.remove('text-gray-400');
-                } else {
-                    label.textContent = 'UNPAID';
-                    label.classList.add('text-gray-400');
-                    label.classList.remove('text-green-600');
-                }
+            .catch(() => {
+                this.checked = !isChecked;
+                label.textContent = this.checked ? 'PAID' : 'UNPAID';
+                label.className = 'status-label text-[10px] font-bold ' + (this.checked ? 'text-green-600' : 'text-gray-400');
             });
+        });
+    });
+
+    // ── Inline Contact Fields (auto-save on blur or Enter) ────────────────────
+    function saveContactRow(row) {
+        const journeyDate = row.dataset.journeyDate;
+        const fields = {};
+        row.querySelectorAll('.contact-field').forEach(inp => {
+            fields[inp.dataset.field] = inp.value;
+        });
+
+        fetch(`/accounting/${busId}/update-hisab-contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ journey_date: journeyDate, ...fields })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                row.querySelectorAll('.contact-field').forEach(inp => {
+                    inp.classList.add('saved');
+                    setTimeout(() => inp.classList.remove('saved'), 1200);
+                });
+            }
+        });
+    }
+
+    document.querySelectorAll('.contact-row').forEach(row => {
+        row.querySelectorAll('.contact-field').forEach(inp => {
+            inp.addEventListener('blur', () => saveContactRow(row));
+            inp.addEventListener('keydown', e => { if(e.key === 'Enter') { inp.blur(); } });
         });
     });
 });

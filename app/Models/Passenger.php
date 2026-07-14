@@ -13,7 +13,8 @@ class Passenger extends Model
         'extra_passenger_amount', 'total_amount', 
         'payable_amount', 'payment_method', 'payment_collected_by',
         'pickup_stop', 'from_place', 'to_place', 'note', 'status',
-        'commission_percentage', 'commission_amount', 'is_hisab_completed'
+        'commission_percentage', 'commission_amount', 'is_hisab_completed',
+        'hisab_person_name', 'hisab_collection_date', 'hisab_mobile_number'
     ];
 
     public function bus()

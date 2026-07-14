@@ -339,9 +339,8 @@
           <td class="c">{{ $d->total_bookings }}</td>
           <td class="r t-b">₹{{ number_format($d->total_revenue, 2) }}</td>
           <td class="r t-blu t-b">₹{{ number_format($d->total_commission, 2) }}</td>
-          <td class="r t-b {{ $d->total_net_revenue < 0 ? 'text-emerald-500' : 'text-rose-500' }}">
-            ₹{{ number_format(abs($d->total_net_revenue), 2) }}
-            <span style="font-size: 10px;">{{ $d->total_net_revenue < 0 ? '(L)' : '(D)' }}</span>
+          <td class="r t-b text-emerald-600">
+            ₹{{ number_format($d->total_net_revenue, 2) }}
           </td>
           <td class="c">
               <a href="{{ route('accounting.show', $bus->id) }}?{{ request()->getQueryString() }}" class="text-[#1c2238] hover:text-[#f0b44b] transition-colors font-bold text-xs uppercase tracking-widest">
@@ -357,9 +356,8 @@
         <td class="c">{{ $commissionBuses->sum(fn($b) => $accountingData->get($b->id)->total_bookings ?? 0) }}</td>
         <td class="r">₹{{ number_format($cRev, 2) }}</td>
         <td class="r t-blu t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
-        <td class="r t-b {{ $cNet < 0 ? 'text-emerald-500' : 'text-rose-500' }}">
+        <td class="r t-b text-emerald-600" style="font-size: 15px;">
             ₹{{ number_format(abs($cNet), 2) }}
-            <span style="font-size: 10px;">{{ $cNet < 0 ? '(L)' : '(D)' }}</span>
         </td>
         <td></td>
       </tr>
