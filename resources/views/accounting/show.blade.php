@@ -82,7 +82,7 @@
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
-        <p class="text-[28px] font-black text-emerald-600 leading-none mb-1">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</p>
+        <p class="text-[28px] font-black t-grn leading-none mb-1">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</p>
         <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
     @endif
@@ -147,8 +147,18 @@
   animation: flash-green 0.5s ease;
 }
 @keyframes flash-green {
+@keyframes flash-green {
   0%   { background:#d1fae5; }
   100% { background:#fff; }
+}
+.wa-btn {
+  display: inline-flex; justify-content: center; align-items: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #f0fdf4; color: #16a34a; transition: all 0.2s;
+  text-decoration: none; cursor: pointer; border: 1px solid #dcfce7;
+}
+.wa-btn:hover {
+  background: #22c55e; color: #fff; border-color: #22c55e;
 }
 </style>
 
@@ -255,15 +265,13 @@
                     $waMsg .= "🏦 Net to Owner: ₹" . number_format($net, 2) . "\n";
                 }
                 $waMsg .= "\n— Jay Gopal Travels | 9904172734";
-                $mobileForWa = $booking->hisab_mobile_number ? preg_replace('/[^0-9]/', '', $booking->hisab_mobile_number) : '';
-                if(strlen($mobileForWa) == 10) $mobileForWa = '91' . $mobileForWa;
-                $waLink = "https://wa.me/{$mobileForWa}?text=" . rawurlencode($waMsg);
               @endphp
-              <a href="{{ $waLink }}" target="_blank"
-                 class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-50 text-green-600 hover:bg-green-500 hover:text-white transition-all text-sm"
-                 title="Send Hisab on WhatsApp">
+              <button type="button"
+                 class="wa-btn"
+                 title="Send Hisab on WhatsApp"
+                 onclick="sendHisabWhatsapp(this, '{{ rawurlencode($waMsg) }}')">
                 <i class="fa-brands fa-whatsapp"></i>
-              </a>
+              </button>
             </td>
           </tr>
         @endforeach
@@ -365,5 +373,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function sendHisabWhatsapp(btn, encodedMsg) {
+    const row = btn.closest('tr');
+    const mobileInput = row.querySelector('input[data-field="hisab_mobile_number"]');
+    let rawNumber = mobileInput ? mobileInput.value : '';
+    rawNumber = rawNumber.replace(/[^0-9]/g, '');
+    
+    if (rawNumber.length === 10) {
+        rawNumber = '91' + rawNumber; // Add India code by default if 10 digits
+    }
+    
+    let url = "https://wa.me/";
+    if (rawNumber) {
+        url += rawNumber;
+    }
+    url += "?text=" + encodedMsg;
+    
+    window.open(url, '_blank');
+}
 </script>
 @endsection

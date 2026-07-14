@@ -131,7 +131,7 @@
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
-        <p class="text-[28px] font-black text-indigo-600 leading-none mb-1">₹{{ number_format($grandNet, 0) }}</p>
+        <p class="text-[28px] font-black leading-none mb-1 t-grn">₹{{ number_format($grandNet, 0) }}</p>
         <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
 </div>
@@ -339,7 +339,7 @@
           <td class="c">{{ $d->total_bookings }}</td>
           <td class="r t-b">₹{{ number_format($d->total_revenue, 2) }}</td>
           <td class="r t-blu t-b">₹{{ number_format($d->total_commission, 2) }}</td>
-          <td class="r t-b text-emerald-600">
+          <td class="r t-b t-grn">
             ₹{{ number_format($d->total_net_revenue, 2) }}
           </td>
           <td class="c">
@@ -356,7 +356,7 @@
         <td class="c">{{ $commissionBuses->sum(fn($b) => $accountingData->get($b->id)->total_bookings ?? 0) }}</td>
         <td class="r">₹{{ number_format($cRev, 2) }}</td>
         <td class="r t-blu t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
-        <td class="r t-b text-emerald-600" style="font-size: 15px;">
+        <td class="r t-b t-grn" style="font-size: 15px;">
             ₹{{ number_format(abs($cNet), 2) }}
         </td>
         <td></td>
