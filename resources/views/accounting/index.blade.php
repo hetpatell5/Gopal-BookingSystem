@@ -130,9 +130,9 @@
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
-        <p class="text-[28px] font-black leading-none mb-1 {{ $grandNet == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($grandNet, 0) }}</p>
-        <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner (D)</p>
+        <p class="text-[28px] font-black leading-none mb-1 t-ros">₹{{ number_format($grandNet, 0) }}</p>
+        <p class="text-[11px] text-gray-500">Devana – pending to other owners</p>
     </div>
 </div>
 
@@ -296,8 +296,8 @@
           <div style="font-size:17px; font-weight:800; color:#60a5fa;">₹{{ number_format($grandComm, 2) }}</div>
         </div>
         <div style="width:160px; text-align:right;">
-          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Net to Owner</div>
-          <div style="font-size:20px; font-weight:900; color:{{ $grandNet == 0 ? '#34d399' : '#f43f5e' }};">₹{{ number_format($grandNet, 2) }}</div>
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Net to Owner (D)</div>
+          <div style="font-size:20px; font-weight:900; color:#f43f5e;">₹{{ number_format($grandNet, 2) }}</div>
         </div>
       </div>
     </div>
@@ -323,8 +323,8 @@
         <th>Bus Name</th>
         <th class="c">Bookings</th>
         <th class="r">Gross Revenue</th>
-        <th class="r">Commission Amount</th>
-        <th class="r">Net to Owner</th>
+        <th class="r">Commission Amount <span style="font-size:10px;font-weight:900;color:#059669;">(L)</span></th>
+        <th class="r">Net to Owner <span style="font-size:10px;font-weight:900;color:#f43f5e;">(D)</span></th>
         <th class="c">Action</th>
       </tr>
     </thead>
@@ -338,8 +338,8 @@
           <td class="t-b text-[#1c2238] uppercase">{{ $bus->name }} <span class="text-xs text-gray-400 normal-case ml-1">({{ $bus->plate_number }})</span></td>
           <td class="c">{{ $d->total_bookings }}</td>
           <td class="r t-b">₹{{ number_format($d->total_revenue, 2) }}</td>
-          <td class="r t-blu t-b">₹{{ number_format($d->total_commission, 2) }}</td>
-          <td class="r t-b {{ ($d->total_net_revenue ?? 0) == 0 ? 't-grn' : 't-ros' }}">
+          <td class="r t-grn t-b">₹{{ number_format($d->total_commission, 2) }}</td>
+          <td class="r t-b t-ros">
             ₹{{ number_format($d->total_net_revenue ?? 0, 2) }}
           </td>
           <td class="c">
@@ -355,8 +355,8 @@
         <td class="r uppercase tracking-widest text-xs">Total</td>
         <td class="c">{{ $commissionBuses->sum(fn($b) => $accountingData->get($b->id)->total_bookings ?? 0) }}</td>
         <td class="r">₹{{ number_format($cRev, 2) }}</td>
-        <td class="r t-blu t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
-        <td class="r t-b {{ $cNet == 0 ? 't-grn' : 't-ros' }}" style="font-size: 15px;">
+        <td class="r t-grn t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
+        <td class="r t-b t-ros" style="font-size: 15px;">
             ₹{{ number_format(abs($cNet), 2) }}
         </td>
         <td></td>

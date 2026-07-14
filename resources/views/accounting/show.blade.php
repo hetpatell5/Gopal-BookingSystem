@@ -185,8 +185,8 @@
           <th class="r">Advance Paid</th>
           <th class="r">Pending (Baki)</th>
           @if($bus->bus_type === 'Commission')
-          <th class="r">Commission</th>
-          <th class="r">Net to Owner</th>
+          <th class="r">Commission <span style="font-size:10px;font-weight:900;color:#059669;">(L)</span></th>
+          <th class="r">Net to Owner <span style="font-size:10px;font-weight:900;color:#f43f5e;">(D)</span></th>
           @endif
           <th>Person Name</th>
           <th>Collection Date</th>
@@ -211,8 +211,8 @@
             <td class="r t-sky">₹{{ number_format($booking->payable_amount, 2) }}</td>
             <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }} t-b">₹{{ number_format($pend, 2) }}</td>
             @if($bus->bus_type === 'Commission')
-            <td class="r t-sky">₹{{ number_format($booking->commission_amount, 2) }}</td>
-            <td class="r t-b {{ $net == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($net, 2) }}</td>
+            <td class="r t-grn t-b">₹{{ number_format($booking->commission_amount, 2) }}</td>
+            <td class="r t-ros t-b">₹{{ number_format($net, 2) }}</td>
             @endif
             {{-- Inline editable: Person Name --}}
             <td>
@@ -264,7 +264,7 @@
                     $waMsg .= "Commission: Rs " . number_format($booking->commission_amount, 2) . "\n";
                     $waMsg .= "Net to Owner: Rs " . number_format($net, 2) . "\n";
                 }
-                $waMsg .= "\n— Jay Gopal Travels | 9904172734";
+                $waMsg .= "\n— Shree Harikrushna Travels | 9904172734";
               @endphp
               <button type="button"
                  class="wa-btn"
@@ -285,8 +285,8 @@
           <td class="r t-sky">₹{{ number_format($totals->total_advance ?? 0, 2) }}</td>
           <td class="r {{ ($totals->total_pending ?? 0) > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($totals->total_pending ?? 0, 2) }}</td>
           @if($bus->bus_type === 'Commission')
-          <th class="r t-sky">₹{{ number_format($totals->total_commission ?? 0, 2) }}</th>
-          <th class="r {{ ($totals->total_net_revenue ?? 0) == 0 ? 't-grn' : 't-ros' }}">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
+          <th class="r t-grn">₹{{ number_format($totals->total_commission ?? 0, 2) }}</th>
+          <th class="r t-ros">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
           @endif
           <td colspan="3"></td>
           <td class="c"></td>
