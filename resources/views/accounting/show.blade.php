@@ -69,7 +69,7 @@
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bus Ma Apela (Baki)</p>
-        <p class="text-[28px] font-black {{ ($totals->total_pending ?? 0) > 0 ? 'text-rose-500' : 'text-emerald-500' }} leading-none mb-1">₹{{ number_format($totals->total_pending ?? 0, 2) }}</p>
+        <p class="text-[28px] font-black t-grn leading-none mb-1">₹{{ number_format($totals->total_baki ?? 0, 2) }}</p>
         <p class="text-[11px] text-gray-500">Still owed by passengers</p>
     </div>
 
@@ -82,7 +82,7 @@
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
-        <p class="text-[28px] font-black t-grn leading-none mb-1">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</p>
+        <p class="text-[28px] font-black t-grn leading-none mb-1">₹{{ number_format($totals->total_net_profit ?? 0, 2) }}</p>
         <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
     @endif
@@ -200,8 +200,12 @@
           @php
               // If hisab is completed/paid, pending is effectively 0
               $pend = $booking->is_hisab_completed ? 0 : ($booking->total_amount - $booking->payable_amount);
-              // Net to Owner zeroes out when paid
-              $net  = $booking->is_hisab_completed ? 0 : ($booking->total_amount - $booking->commission_amount);
+              
+              // Raw net to owner (Advance - Commission)
+              $rawNet = $booking->payable_amount - $booking->commission_amount;
+              $netColor = $booking->is_hisab_completed ? 't-grn' : ($rawNet < 0 ? 't-grn' : 't-ros');
+              $netSuffix = $rawNet < 0 ? '(L)' : '(D)';
+              $netSuffixColor = $booking->is_hisab_completed ? '#059669' : ($rawNet < 0 ? '#059669' : '#f43f5e');
           @endphp
           <tr class="contact-row" data-journey-date="{{ $booking->journey_date }}">
             <td class="t-b">{{ \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') }}</td>
@@ -212,7 +216,10 @@
             <td class="r {{ $pend > 0 ? 't-ros' : 't-grn' }} t-b">₹{{ number_format($pend, 2) }}</td>
             @if($bus->bus_type === 'Commission')
             <td class="r t-grn t-b">₹{{ number_format($booking->commission_amount, 2) }}</td>
-            <td class="r t-ros t-b">₹{{ number_format($net, 2) }}</td>
+            <td class="r {{ $netColor }} t-b">
+                ₹{{ number_format(abs($rawNet), 2) }}
+                <span style="font-size:10px;font-weight:900;color:{{ $netSuffixColor }};">{{ $netSuffix }}</span>
+            </td>
             @endif
             {{-- Inline editable: Person Name --}}
             <td>
@@ -246,7 +253,7 @@
                            data-journey-date="{{ $booking->journey_date }}"
                            {{ $booking->is_hisab_completed ? 'checked' : '' }}
                            title="Mark Daily Hisab as Paid/Completed">
-                    <span class="status-label text-[10px] font-bold {{ $booking->is_hisab_completed ? 'text-green-600' : 'text-gray-400' }}">
+                    <span class="status-label text-[10px] font-bold {{ $booking->is_hisab_completed ? 'text-[#059669]' : 'text-[#f43f5e]' }}">
                         {{ $booking->is_hisab_completed ? 'PAID' : 'UNPAID' }}
                     </span>
                 </div>
@@ -255,7 +262,6 @@
             <td class="c">
               @php
                 $originalPend = $booking->total_amount - $booking->payable_amount;
-                $originalNet = $booking->total_amount - $booking->commission_amount;
                 
                 $waMsg = "*Bus Hisab – {$bus->name}*\n";
                 $waMsg .= "Date: " . \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') . "\n";
@@ -266,8 +272,8 @@
                     $waMsg .= "Baki: Rs " . number_format($originalPend, 2) . "\n";
                 }
                 if($bus->bus_type === 'Commission') {
-                    $waMsg .= "Commission: Rs " . number_format($booking->commission_amount, 2) . "\n";
-                    $waMsg .= "Net to Owner: Rs " . number_format($originalNet, 2) . "\n";
+                    $waMsg .= "Commission (L): Rs " . number_format($booking->commission_amount, 2) . "\n";
+                    $waMsg .= "Net to Owner {$netSuffix}: Rs " . number_format(abs($rawNet), 2) . "\n";
                 }
                 
                 $waMsg .= "Status: " . ($booking->is_hisab_completed ? "PAID" : "UNPAID") . "\n";
@@ -305,8 +311,17 @@
           <td class="r t-sky">₹{{ number_format($totals->total_advance ?? 0, 2) }}</td>
           <td class="r {{ ($totals->total_pending ?? 0) > 0 ? 't-ros' : 't-grn' }}">₹{{ number_format($totals->total_pending ?? 0, 2) }}</td>
           @if($bus->bus_type === 'Commission')
+          @php
+              $totalRawNet = $totals->total_net_revenue ?? 0;
+              $totalNetColor = $totalRawNet < 0 ? 't-grn' : 't-ros';
+              $totalNetSuffix = $totalRawNet < 0 ? '(L)' : '(D)';
+              $totalNetSuffixColor = $totalRawNet < 0 ? '#059669' : '#f43f5e';
+          @endphp
           <th class="r t-grn">₹{{ number_format($totals->total_commission ?? 0, 2) }}</th>
-          <th class="r t-ros">₹{{ number_format($totals->total_net_revenue ?? 0, 2) }}</th>
+          <th class="r {{ $totalNetColor }}">
+              ₹{{ number_format(abs($totalRawNet), 2) }}
+              <span style="font-size:10px;font-weight:900;color:{{ $totalNetSuffixColor }};">{{ $totalNetSuffix }}</span>
+          </th>
           @endif
           <td colspan="3"></td>
           <td class="c"></td>

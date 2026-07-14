@@ -42,9 +42,11 @@ class AccountingController extends Controller
                 DB::raw('SUM(total_seats)                                    as total_seats_sold'),
                 DB::raw('SUM(total_amount)                                   as total_revenue'),       // gross billed
                 DB::raw('SUM(payable_amount)                                 as total_advance'),       // advance collected
+                DB::raw('SUM(total_amount - payable_amount)                                  as total_baki'),
                 DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending'),
                 DB::raw('SUM(commission_amount)                              as total_commission'),
-                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - commission_amount ELSE 0 END) as total_net_revenue')
+                DB::raw('SUM(total_amount - commission_amount)                               as total_net_profit'),
+                DB::raw('SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue')
             )
             ->groupBy('bus_id')
             ->get()
@@ -58,6 +60,7 @@ class AccountingController extends Controller
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
+                SUM(total_amount - payable_amount)     as baki,
                 SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending
             ')
             ->first();
@@ -69,10 +72,13 @@ class AccountingController extends Controller
                 COUNT(id)                              as bookings,
                 SUM(total_seats)                       as seats,
                 SUM(total_amount)                      as revenue,
+                SUM(total_amount)                      as revenue,
                 SUM(payable_amount)                    as advance,
+                SUM(total_amount - payable_amount)     as baki,
                 SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as pending,
                 SUM(commission_amount)                 as commission,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - commission_amount ELSE 0 END) as net_revenue
+                SUM(total_amount - commission_amount)  as net_profit,
+                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as net_revenue
             ')
             ->first();
 
@@ -125,9 +131,11 @@ class AccountingController extends Controller
                 SUM(total_seats) as total_seats_sold,
                 SUM(total_amount) as total_revenue,
                 SUM(payable_amount) as total_advance,
+                SUM(total_amount - payable_amount) as total_baki,
                 SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - payable_amount ELSE 0 END) as total_pending,
                 SUM(commission_amount) as total_commission,
-                SUM(CASE WHEN is_hisab_completed = 0 THEN total_amount - commission_amount ELSE 0 END) as total_net_revenue
+                SUM(total_amount - commission_amount) as total_net_profit,
+                SUM(CASE WHEN is_hisab_completed = 0 THEN payable_amount - commission_amount ELSE 0 END) as total_net_revenue
             ')
             ->first();
 

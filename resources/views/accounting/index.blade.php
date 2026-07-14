@@ -13,16 +13,18 @@
     // ── Compute subtotals directly from per-bus $accountingData ────────────
     // This ensures subtotals ALWAYS match what's shown in the rows (no mismatch).
 
-    $pRev  = 0; $pAdv  = 0; $pPend  = 0;
+    $pRev  = 0; $pAdv  = 0; $pPend  = 0; $pBaki = 0; $pNetProfit = 0;
     foreach ($personalBuses as $bus) {
         $d = $accountingData->get($bus->id);
         if (!$d) continue;
         $pRev  += $d->total_revenue ?? 0;
         $pAdv  += $d->total_advance ?? 0;
         $pPend += $d->total_pending ?? 0;
+        $pBaki += $d->total_baki ?? 0;
+        $pNetProfit += $d->total_revenue ?? 0; // for personal, profit = revenue
     }
 
-    $cRev  = 0; $cAdv  = 0; $cPend  = 0; $cComm = 0; $cNet = 0;
+    $cRev  = 0; $cAdv  = 0; $cPend  = 0; $cComm = 0; $cNet = 0; $cBaki = 0; $cNetProfit = 0;
     foreach ($commissionBuses as $bus) {
         $d = $accountingData->get($bus->id);
         if (!$d) continue;
@@ -31,6 +33,8 @@
         $cPend += $d->total_pending     ?? 0;
         $cComm += $d->total_commission  ?? 0;
         $cNet  += $d->total_net_revenue ?? 0;
+        $cBaki += $d->total_baki        ?? 0;
+        $cNetProfit += $d->total_net_profit ?? 0;
     }
 
     // Grand totals — respect the active toggle
@@ -38,16 +42,20 @@
         $grandRev  = $pRev;  $grandAdv  = $pAdv;
         $grandPend = $pPend; $grandComm = 0;
         $grandNet  = $pRev;  // personal owner keeps all revenue
+        $grandBaki = $pBaki; $grandNetProfit = $pNetProfit;
     } elseif ($activeType === 'Commission') {
         $grandRev  = $cRev;  $grandAdv  = $cAdv;
         $grandPend = $cPend; $grandComm = $cComm;
         $grandNet  = $cNet;
+        $grandBaki = $cBaki; $grandNetProfit = $cNetProfit;
     } else {
         $grandRev  = $pRev  + $cRev;
         $grandAdv  = $pAdv  + $cAdv;
         $grandPend = $pPend + $cPend;
         $grandComm = $cComm;
         $grandNet  = $pRev  + $cNet;
+        $grandBaki = $pBaki + $cBaki;
+        $grandNetProfit = $pNetProfit + $cNetProfit;
     }
 
     // KPI card bookings — always show combined (from controller data)
@@ -118,8 +126,8 @@
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pending (Baki)</p>
-        <p class="text-[28px] font-black text-rose-500 leading-none mb-1">₹{{ number_format($grandPend, 0) }}</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bus Ma Apela (Baki)</p>
+        <p class="text-[28px] font-black t-grn leading-none mb-1">₹{{ number_format($grandBaki, 0) }}</p>
         <p class="text-[11px] text-gray-500">Still owed by passengers</p>
     </div>
 
@@ -130,9 +138,9 @@
     </div>
 
     <div class="flex-1 min-w-[200px] bg-white shadow-sm p-4 border border-gray-100 rounded-none">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner (D)</p>
-        <p class="text-[28px] font-black leading-none mb-1 t-ros">₹{{ number_format($grandNet, 0) }}</p>
-        <p class="text-[11px] text-gray-500">Devana – pending to other owners</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Owner Profit</p>
+        <p class="text-[28px] font-black leading-none mb-1 t-grn">₹{{ number_format($grandNetProfit, 0) }}</p>
+        <p class="text-[11px] text-gray-500">Gross revenue minus commission</p>
     </div>
 </div>
 
@@ -295,9 +303,16 @@
           <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Commission</div>
           <div style="font-size:17px; font-weight:800; color:#60a5fa;">₹{{ number_format($grandComm, 2) }}</div>
         </div>
+        @php
+            $grandNetColor = $grandNet < 0 ? '#059669' : '#f43f5e';
+            $grandNetSuffix = $grandNet < 0 ? '(L)' : '(D)';
+        @endphp
         <div style="width:160px; text-align:right;">
-          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Net to Owner (D)</div>
-          <div style="font-size:20px; font-weight:900; color:#f43f5e;">₹{{ number_format($grandNet, 2) }}</div>
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#94a3b8; margin-bottom:3px;">Net to Owner</div>
+          <div style="font-size:20px; font-weight:900; color:{{ $grandNetColor }};">
+              ₹{{ number_format(abs($grandNet), 2) }}
+              <span style="font-size:10px;font-weight:900;color:{{ $grandNetColor }};">{{ $grandNetSuffix }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -324,7 +339,7 @@
         <th class="c">Bookings</th>
         <th class="r">Gross Revenue</th>
         <th class="r">Commission Amount <span style="font-size:10px;font-weight:900;color:#059669;">(L)</span></th>
-        <th class="r">Net to Owner <span style="font-size:10px;font-weight:900;color:#f43f5e;">(D)</span></th>
+        <th class="r">Net to Owner</th>
         <th class="c">Action</th>
       </tr>
     </thead>
@@ -339,8 +354,15 @@
           <td class="c">{{ $d->total_bookings }}</td>
           <td class="r t-b">₹{{ number_format($d->total_revenue, 2) }}</td>
           <td class="r t-grn t-b">₹{{ number_format($d->total_commission, 2) }}</td>
-          <td class="r t-b t-ros">
-            ₹{{ number_format($d->total_net_revenue ?? 0, 2) }}
+          @php
+              $busNet = $d->total_net_revenue ?? 0;
+              $busNetColor = $busNet < 0 ? 't-grn' : 't-ros';
+              $busNetSuffix = $busNet < 0 ? '(L)' : '(D)';
+              $busNetSuffixColor = $busNet < 0 ? '#059669' : '#f43f5e';
+          @endphp
+          <td class="r t-b {{ $busNetColor }}">
+            ₹{{ number_format(abs($busNet), 2) }}
+            <span style="font-size:10px;font-weight:900;color:{{ $busNetSuffixColor }};">{{ $busNetSuffix }}</span>
           </td>
           <td class="c">
               <a href="{{ route('accounting.show', $bus->id) }}?{{ request()->getQueryString() }}" class="text-[#1c2238] hover:text-[#f0b44b] transition-colors font-bold text-xs uppercase tracking-widest">
@@ -356,8 +378,14 @@
         <td class="c">{{ $commissionBuses->sum(fn($b) => $accountingData->get($b->id)->total_bookings ?? 0) }}</td>
         <td class="r">₹{{ number_format($cRev, 2) }}</td>
         <td class="r t-grn t-b" style="font-size: 15px;">₹{{ number_format($cComm, 2) }}</td>
-        <td class="r t-b t-ros" style="font-size: 15px;">
+        @php
+            $cNetColor = $cNet < 0 ? 't-grn' : 't-ros';
+            $cNetSuffix = $cNet < 0 ? '(L)' : '(D)';
+            $cNetSuffixColor = $cNet < 0 ? '#059669' : '#f43f5e';
+        @endphp
+        <td class="r t-b {{ $cNetColor }}" style="font-size: 15px;">
             ₹{{ number_format(abs($cNet), 2) }}
+            <span style="font-size:10px;font-weight:900;color:{{ $cNetSuffixColor }};">{{ $cNetSuffix }}</span>
         </td>
         <td></td>
       </tr>
