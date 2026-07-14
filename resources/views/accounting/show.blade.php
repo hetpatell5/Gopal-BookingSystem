@@ -190,8 +190,8 @@
           @php
               // If hisab is completed/paid, pending is effectively 0
               $pend = $booking->is_hisab_completed ? 0 : ($booking->total_amount - $booking->payable_amount);
-              // Net to Owner = Gross Revenue - Commission (always profit, shown in green)
-              $net  = $booking->total_amount - $booking->commission_amount;
+              // Net to Owner zeroes out when paid
+              $net  = $booking->is_hisab_completed ? 0 : ($booking->total_amount - $booking->commission_amount);
           @endphp
           <tr class="contact-row" data-journey-date="{{ $booking->journey_date }}">
             <td class="t-b">{{ \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') }}</td>
