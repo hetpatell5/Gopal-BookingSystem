@@ -254,16 +254,36 @@
             {{-- Actions: WhatsApp --}}
             <td class="c">
               @php
+                $originalPend = $booking->total_amount - $booking->payable_amount;
+                $originalNet = $booking->total_amount - $booking->commission_amount;
+                
                 $waMsg = "*Bus Hisab – {$bus->name}*\n";
                 $waMsg .= "Date: " . \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') . "\n";
                 $waMsg .= "Bookings: {$booking->total_bookings} | Seats: {$booking->total_seats}\n";
                 $waMsg .= "Gross: Rs " . number_format($booking->total_amount, 2) . "\n";
                 $waMsg .= "Advance: Rs " . number_format($booking->payable_amount, 2) . "\n";
-                if($pend > 0) $waMsg .= "Baki: Rs " . number_format($pend, 2) . "\n";
+                if($originalPend > 0) {
+                    $waMsg .= "Baki: Rs " . number_format($originalPend, 2) . "\n";
+                }
                 if($bus->bus_type === 'Commission') {
                     $waMsg .= "Commission: Rs " . number_format($booking->commission_amount, 2) . "\n";
-                    $waMsg .= "Net to Owner: Rs " . number_format($net, 2) . "\n";
+                    $waMsg .= "Net to Owner: Rs " . number_format($originalNet, 2) . "\n";
                 }
+                
+                $waMsg .= "Status: " . ($booking->is_hisab_completed ? "PAID" : "UNPAID") . "\n";
+                
+                if ($booking->is_hisab_completed) {
+                    if ($booking->hisab_person_name) {
+                        $waMsg .= "Person Name: {$booking->hisab_person_name}\n";
+                    }
+                    if ($booking->hisab_collection_date) {
+                        $waMsg .= "Collection Date: " . \Carbon\Carbon::parse($booking->hisab_collection_date)->format('d-m-Y') . "\n";
+                    }
+                    if ($booking->hisab_mobile_number) {
+                        $waMsg .= "Mobile No.: {$booking->hisab_mobile_number}\n";
+                    }
+                }
+                
                 $waMsg .= "\n— Shree Harikrushna Travels | 9904172734";
               @endphp
               <button type="button"
