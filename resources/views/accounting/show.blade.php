@@ -254,15 +254,15 @@
             {{-- Actions: WhatsApp --}}
             <td class="c">
               @php
-                $waMsg = "*Bus Hisab – {{ $bus->name }}*\n";
-                $waMsg .= "📅 Date: " . \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') . "\n";
-                $waMsg .= "🎫 Bookings: {$booking->total_bookings} | Seats: {$booking->total_seats}\n";
-                $waMsg .= "💰 Gross: ₹" . number_format($booking->total_amount, 2) . "\n";
-                $waMsg .= "✅ Advance: ₹" . number_format($booking->payable_amount, 2) . "\n";
-                if($pend > 0) $waMsg .= "⏳ Baki: ₹" . number_format($pend, 2) . "\n";
+                $waMsg = "*Bus Hisab – {$bus->name}*\n";
+                $waMsg .= "Date: " . \Carbon\Carbon::parse($booking->journey_date)->format('d M Y') . "\n";
+                $waMsg .= "Bookings: {$booking->total_bookings} | Seats: {$booking->total_seats}\n";
+                $waMsg .= "Gross: Rs " . number_format($booking->total_amount, 2) . "\n";
+                $waMsg .= "Advance: Rs " . number_format($booking->payable_amount, 2) . "\n";
+                if($pend > 0) $waMsg .= "Baki: Rs " . number_format($pend, 2) . "\n";
                 if($bus->bus_type === 'Commission') {
-                    $waMsg .= "🤝 Commission: ₹" . number_format($booking->commission_amount, 2) . "\n";
-                    $waMsg .= "🏦 Net to Owner: ₹" . number_format($net, 2) . "\n";
+                    $waMsg .= "Commission: Rs " . number_format($booking->commission_amount, 2) . "\n";
+                    $waMsg .= "Net to Owner: Rs " . number_format($net, 2) . "\n";
                 }
                 $waMsg .= "\n— Jay Gopal Travels | 9904172734";
               @endphp
